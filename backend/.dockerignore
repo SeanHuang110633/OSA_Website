@@ -1,0 +1,28 @@
+# 排除版本控制資料
+.git
+.gitignore
+
+# 排除 Python 暫存與虛擬環境
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# 排除環境變數檔案 (防止洩漏)
+.env
+.env.*
+
+# 排除上傳的測試檔案
+uploads/
+# 除非你希望映像檔內有預設結構，否則建議排除
+
+# 排除開發文件 (這些不需要在容器內)
+*.md
+docs/
+
+# 排除 Docker 相關檔案本身
+Dockerfile
+docker-compose.yml

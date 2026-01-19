@@ -1,0 +1,11 @@
+# 作業系統雜物
+.DS_Store
+Thumbs.db
+
+# Docker 相關
+# 如果你的 docker-compose 將 db_data 掛載在宿主機目錄下，請排除它
+db_data/
+
+# 編輯器設定 (選配)
+.vscode/
+.idea/

@@ -1,0 +1,18 @@
+# Python 執行暫存
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 虛擬環境
+venv/
+env/
+.venv/
+
+# 環境變數與敏感資訊
+.env
+.env.*
+!.env.example
+
+# 上傳檔案 (排除實體檔案，但保留目錄結構)
+uploads/**/*
+!uploads/.gitkeep

@@ -1,0 +1,21 @@
+# 依賴套件目錄 (由 Docker 內的 pnpm 管理)
+node_modules/
+.pnpm-store/
+
+# 打包產出
+dist/
+dist-ssr/
+*.local
+
+# 日誌檔案
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Vite 暫存
+.vite/
+
+#env
+.env
+.env.*

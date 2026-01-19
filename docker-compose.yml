@@ -1,0 +1,50 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: osa_mysql_dev
+    environment:
+      MYSQL_DATABASE: osa_newdb_test # 與 core.md 中的設定對應
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./seed.sql:/docker-entrypoint-initdb.d/seed.sql:ro # 自動初始化假資料
+    ports:
+      # 左邊改為 3307 (主機端, 避免與本機 MySQL 衝突)，右邊保持 3306 (容器端)
+      - "3307:3306"
+
+  backend:
+    build: ./backend
+    container_name: osa_backend_dev
+    volumes:
+      - ./backend:/app # 程式碼熱重載同步
+      - ./backend/uploads:/app/uploads # 上傳目錄掛載
+    env_file:
+      - ./backend/.env # 讀取資料庫連線字串
+    ports:
+      - "8000:8000" # 對應 uvicorn 埠號
+    depends_on:
+      - db
+
+  frontend:
+    image: node:20
+    container_name: osa_frontend_dev
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      # 避免本地 node_modules 影響容器，這是 Docker 前端開發的標準做法
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      # 設定為開發環境
+      - NODE_ENV=development
+    # 這裡使用 pnpm 來啟動，並確保先安裝 pnpm 本身
+    command: >
+      sh -c "npm install -g pnpm && 
+             pnpm install && 
+             pnpm dev"
+    depends_on:
+      - backend
+
+volumes:
+  db_data: # 資料庫持久化，確保重新啟動後資料不會消失
