@@ -103,6 +103,52 @@ import AppFooter from "./components/layout/AppFooter.vue";
 import AppSidebar from "./components/layout/AppSidebar.vue";
 import EventCard from "./components/event/EventCard.vue";
 
+// test
+import axios from "axios";
+// 設定測試函式
+const testMockServer = async () => {
+  console.log("--- 🚀 開始測試 Mock Server 契約 ---");
+
+  // 1. 測試 Member (成員介紹) API
+  try {
+    console.log("正在測試 Member API...");
+    const memberRes = await axios.get("/api/departments/1", {
+      params: { locale: "zh-TW" },
+    });
+    console.log("✅ Member API 成功！獲取到部門：", memberRes.data.name);
+    console.log("成員數量：", memberRes.data.members.length);
+    console.table(memberRes.data.members); // 用表格形式印出成員清單
+  } catch (err) {
+    console.error("❌ Member API 失敗：", err.message);
+  }
+
+  // 2. 測試 Download (下載專區) API - 測試篩選功能
+  try {
+    console.log("正在測試 Download API (篩選 type=regulation)...");
+    const downloadRes = await axios.get("/api/downloads/", {
+      params: {
+        locale: "zh-TW",
+        type: "regulation", // 測試我們剛寫好的篩選邏輯
+      },
+    });
+    console.log(
+      "✅ Download API 成功！獲取到的分類數：",
+      downloadRes.data.length,
+    );
+
+    // 檢查回傳的資料是否都只有 regulation
+    const allItemsAreRegulations = downloadRes.data.every((cat) =>
+      cat.items.every((item) => item.type === "regulation"),
+    );
+    console.log("符合篩選條件(法規)：", allItemsAreRegulations ? "是" : "否");
+    console.log("詳細資料：", downloadRes.data);
+  } catch (err) {
+    console.error("❌ Download API 失敗：", err.message);
+  }
+
+  console.log("--- 🏁 測試結束 ---");
+};
+
 // 狀態
 const events = ref([]);
 const loading = ref(false);
@@ -141,5 +187,6 @@ const handleEventClick = async (id) => {
 
 onMounted(() => {
   fetchEvents();
+  testMockServer(); // 執行測試函式
 });
 </script>
