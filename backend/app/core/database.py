@@ -29,6 +29,7 @@ engine = create_engine(
 )
 
 # 4. 建立資料庫和表格
+# todo: 後續改成用 Alembic 來管理資料庫版本
 def create_db_and_tables():
     # =========================================================
     # [重要] 必須在這裡 import 所有的 Model
