@@ -3,8 +3,6 @@ from typing import Optional, Dict, List
 from sqlmodel import SQLModel, Field, Relationship
 from sqlalchemy import JSON, UniqueConstraint, ForeignKey, Text  # 處理 JSON 欄位
 from datetime import datetime  # 處理時間
-from enum import IntEnum, Enum # 處理狀態碼 & 附件類型
-from app.models.constants import EventStatus, AttachmentType
 
 # 1. 定義 EventCategory 模型
 class EventCategory(SQLModel, table=True):
@@ -45,7 +43,6 @@ class Event(SQLModel, table=True):
     category_id: int = Field(foreign_key="event_categories.id") # 這也是為什麼要先定義 EventCategory
 
     # status: 狀態
-    # 這裡我們直接使用剛剛定義的 EventStatus 型別，SQLModel 會自動存成整數
     status: int = Field(
         default=0, 
         schema_extra={"comment": "0:草稿, 1:發布, 2:封存"}

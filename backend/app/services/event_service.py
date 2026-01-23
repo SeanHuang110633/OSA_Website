@@ -2,7 +2,7 @@
 from typing import List, Optional
 from fastapi import HTTPException
 from sqlmodel import Session
-from app.models.event_model import Event, EventStatus
+from app.models.event_model import Event
 from app.schemas.event_schema import EventListView, EventDetailView, CategoryPublic, AttachmentPublic
 from app.repositories.event_repository import EventRepository
 

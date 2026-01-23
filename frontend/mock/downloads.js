@@ -1,165 +1,159 @@
-// frontend/mock/download.js
+// // frontend/mock/download.js
 import Mock from "mockjs";
 
+// --- 模擬資料庫原始資料 (Master Data) ---
+const categories = [
+  {
+    id: 1,
+    slug: "scholarship",
+    names: { "zh-TW": "獎助學金", "en-US": "Scholarships" },
+    is_active: true,
+  },
+  {
+    id: 2,
+    slug: "dormitory",
+    names: { "zh-TW": "宿舍管理", "en-US": "Dorm Management" },
+    is_active: true,
+  },
+  {
+    id: 3,
+    slug: "counseling",
+    names: { "zh-TW": "諮商輔導", "en-US": "Counseling" },
+    is_active: true,
+  },
+];
+
+const downloads = [
+  {
+    id: 1,
+    category_id: 1,
+    type: "regulation",
+    title: {
+      "zh-TW": "國立中央大學學生獎學金辦法",
+      "en-US": "NCU Scholarship Regulations",
+    },
+    department: { "zh-TW": "生活輔導組", "en-US": "Student Services Division" },
+    published_at: "2024-12-01T08:00:00",
+    attachments: [
+      {
+        id: 101,
+        type: "file",
+        file_format: "pdf",
+        path: "/files/reg_01.pdf",
+        title: "PDF",
+        sort_order: 1,
+      },
+      {
+        id: 102,
+        type: "file",
+        file_format: "odf",
+        path: "/files/reg_01.odt",
+        title: "ODF",
+        sort_order: 2,
+      },
+    ],
+  },
+  {
+    id: 2,
+    category_id: 1,
+    type: "form",
+    title: {
+      "zh-TW": "校內獎學金申請表",
+      "en-US": "Scholarship Application Form",
+    },
+    department: { "zh-TW": "生活輔導組", "en-US": "Student Services Division" },
+    published_at: "2025-01-15T10:00:00",
+    attachments: [
+      {
+        id: 201,
+        type: "file",
+        file_format: "doc",
+        path: "/files/form_02.doc",
+        title: "DOC",
+        sort_order: 1,
+      },
+    ],
+  },
+  // ... 可以自行增加更多資料
+];
+
+// --- 輔助工具：多語系轉換 (模擬 Service 層邏輯) ---
+const getLang = (obj, locale) => obj[locale] || obj["zh-TW"] || "Unknown";
+
 export default [
+  // 1. 取得分類清單 API
+  {
+    url: "/api/downloads/categories",
+    method: "get",
+    response: ({ query }) => {
+      const locale = query.locale || "zh-TW";
+      return categories
+        .filter((c) => c.is_active)
+        .map((c) => ({
+          id: c.id,
+          slug: c.slug,
+          name: getLang(c.names, locale),
+        }));
+    },
+  },
+
+  // 2. 取得下載分頁列表 API
   {
     url: "/api/downloads/",
     method: "get",
     response: ({ query }) => {
-      const locale = query.locale || "zh-TW";
-      const { type, category } = query;
+      const {
+        locale = "zh-TW",
+        page = 1,
+        size = 10,
+        type,
+        category_id,
+        query: searchText,
+      } = query;
 
-      // 1. 準備原始完整資料 (對應你資料庫中的 download_categories 與 downloads)
-      const allData = [
-        {
-          category_name: locale === "zh-TW" ? "獎助學金" : "Scholarships",
-          category_slug: "scholarship",
-          items: [
-            {
-              id: 1,
-              type: "regulation",
-              title:
-                locale === "zh-TW"
-                  ? "國立中央大學學生獎學金辦法"
-                  : "NCU Student Scholarship Regulations",
-              department:
-                locale === "zh-TW" ? "生活輔導組" : "Student Services Division",
-              published_at: "2024-12-01T08:00:00",
-              attachments: [
-                {
-                  type: "file",
-                  file_format: "pdf",
-                  path: "/uploads/dl/reg_01.pdf",
-                  title: "法規全文 (PDF)",
-                },
-                {
-                  type: "file",
-                  file_format: "odf",
-                  path: "/uploads/dl/reg_01.odt",
-                  title: "法規全文 (ODF)",
-                },
-              ],
-            },
-            {
-              id: 2,
-              type: "form",
-              title:
-                locale === "zh-TW"
-                  ? "校內獎學金申請表"
-                  : "Internal Scholarship Application Form",
-              department:
-                locale === "zh-TW" ? "生活輔導組" : "Student Services Division",
-              published_at: "2025-01-15T10:00:00",
-              attachments: [
-                {
-                  type: "file",
-                  file_format: "doc",
-                  path: "/uploads/dl/form_02.doc",
-                  title: "申請表 (DOC)",
-                },
-                {
-                  type: "link",
-                  file_format: null,
-                  path: "https://portal.ncu.edu.tw",
-                  title: "線上申請系統",
-                },
-              ],
-            },
-          ],
-        },
-        {
-          category_name:
-            locale === "zh-TW" ? "宿舍管理" : "Dormitory Management",
-          category_slug: "dormitory",
-          items: [
-            {
-              id: 3,
-              type: "regulation",
-              title:
-                locale === "zh-TW"
-                  ? "學生宿舍管理辦法"
-                  : "Student Dormitory Regulations",
-              department:
-                locale === "zh-TW" ? "生活輔導組" : "Student Services Division",
-              published_at: "2024-08-20T09:00:00",
-              attachments: [
-                {
-                  type: "file",
-                  file_format: "pdf",
-                  path: "/uploads/dl/dorm_reg.pdf",
-                  title: "管理辦法 (PDF)",
-                },
-              ],
-            },
-            {
-              id: 4,
-              type: "form",
-              title:
-                locale === "zh-TW" ? "退宿申請表" : "Dormitory Withdrawal Form",
-              department:
-                locale === "zh-TW" ? "生活輔導組" : "Student Services Division",
-              published_at: "2025-01-05T16:00:00",
-              attachments: [
-                {
-                  type: "file",
-                  file_format: "pdf",
-                  path: "/uploads/dl/dorm_out.pdf",
-                  title: "申請表下載",
-                },
-              ],
-            },
-          ],
-        },
-        {
-          category_name:
-            locale === "zh-TW" ? "諮商輔導" : "Counseling Services",
-          category_slug: "counseling",
-          items: [
-            {
-              id: 5,
-              type: "form",
-              title:
-                locale === "zh-TW"
-                  ? "個別諮商申請表"
-                  : "Individual Counseling Application",
-              department:
-                locale === "zh-TW" ? "諮商輔導組" : "Counseling Division",
-              published_at: "2024-09-01T08:30:00",
-              attachments: [
-                {
-                  type: "file",
-                  file_format: "pdf",
-                  path: "/uploads/dl/counsel_form.pdf",
-                  title: "申請表下載",
-                },
-              ],
-            },
-          ],
-        },
-      ];
+      // A. 模擬 Repository 篩選邏輯
+      let result = downloads.filter((d) => {
+        let match = true;
+        if (type && d.type !== type) match = false;
+        if (category_id && d.category_id !== parseInt(category_id))
+          match = false;
+        if (searchText) {
+          const titleStr = JSON.stringify(d.title);
+          if (!titleStr.includes(searchText)) match = false;
+        }
+        return match;
+      });
 
-      // 2. 篩選邏輯
-      let filteredData = allData;
+      const total = result.length;
 
-      // A. 先篩選「類型」 (Type: regulation/form)
-      // 這會過濾每個類別中的 items，如果該類別篩選後沒有 items 則移除該類別
-      if (type) {
-        filteredData = filteredData
-          .map((cat) => ({
-            ...cat,
-            items: cat.items.filter((item) => item.type === type),
-          }))
-          .filter((cat) => cat.items.length > 0);
-      }
+      // B. 模擬分頁 (Pagination)
+      const start = (page - 1) * size;
+      const end = start + parseInt(size);
+      const pagedData = result.slice(start, end);
 
-      // B. 再篩選「分類」 (Category Slug: scholarship/dormitory/...)
-      if (category) {
-        filteredData = filteredData.filter(
-          (cat) => cat.category_slug === category,
-        );
-      }
+      // C. 模擬 Service 層：DTO 扁平化與多語系轉換
+      const items = pagedData.map((d) => {
+        const cat = categories.find((c) => c.id === d.category_id);
+        return {
+          id: d.id,
+          type: d.type,
+          category: {
+            slug: cat.slug,
+            name: getLang(cat.names, locale),
+          },
+          title: getLang(d.title, locale),
+          department: d.department ? getLang(d.department, locale) : null,
+          published_at: d.published_at,
+          attachments: d.attachments, // 附件直接回傳
+        };
+      });
 
-      return filteredData;
+      return {
+        total,
+        page: parseInt(page),
+        size: parseInt(size),
+        items,
+      };
     },
   },
 ];
