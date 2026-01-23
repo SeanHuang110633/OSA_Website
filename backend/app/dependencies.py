@@ -2,7 +2,7 @@
 # 統一處理依賴注入的工廠函式
 
 from fastapi import Depends
-from backend.app.repositories.download_repository import DownloadRepository
+from app.repositories.download_repository import DownloadRepository
 from sqlmodel import Session
 from app.core.database import get_session
 from app.repositories.event_repository import EventRepository
@@ -11,6 +11,7 @@ from app.services.download_service import DownloadService
 
 # event_service 依賴注入工廠 (Dependency Injection Factory)
 def get_event_service(session: Session = Depends(get_session)) -> EventService:
+    # 建立順序：Session -> Repository -> Service
     return EventService(EventRepository(session))
 
 # download_service 依賴注入工廠

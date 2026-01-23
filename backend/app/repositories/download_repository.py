@@ -3,7 +3,7 @@ from sqlmodel import Session, select, col, func
 from sqlalchemy.orm import selectinload
 from sqlalchemy import or_
 
-from app.models.download_model import Download, DownloadCategory, DownloadStatus
+from app.models.download_model import Download, DownloadCategory
 
 class DownloadRepository:
     def __init__(self, session: Session):

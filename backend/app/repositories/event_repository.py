@@ -4,7 +4,7 @@ from sqlmodel import Session, select, col
 from sqlalchemy.orm import selectinload # 這是解決效能問題的關鍵
 
 # 引入模型
-from app.models.event_model import Event, EventStatus
+from app.models.event_model import Event
 
 class EventRepository:
     def __init__(self, session: Session):

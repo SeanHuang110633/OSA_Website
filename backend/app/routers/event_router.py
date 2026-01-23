@@ -7,7 +7,6 @@ from sqlmodel import Session
 from app.core.database import get_session  
 from app.schemas.event_schema import EventListView, EventDetailView
 from app.services.event_service import EventService
-from app.repositories.event_repository import EventRepository
 from app.dependencies import get_event_service
 
 # 2. 定義 Router
