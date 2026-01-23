@@ -2,6 +2,7 @@
 from typing import List, Optional
 from sqlmodel import Session, select, col
 from sqlalchemy.orm import selectinload # 這是解決效能問題的關鍵
+from app.models.constants import EventStatus  # 引入狀態常數
 
 # 引入模型
 from app.models.event_model import Event

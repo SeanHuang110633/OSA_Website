@@ -87,6 +87,7 @@ class DownloadService:
         # 1. 分類扁平化(扁平化是指，只取必要欄位並轉換語言)
         category_name = self._get_json_text(download.category.names, locale)
         category_dto = CategoryPublic(
+            id=download.category.id,
             slug=download.category.slug,
             name=category_name
         )
