@@ -44,10 +44,11 @@ class DownloadRepository:
 
         # 3. 模糊搜尋 (針對 JSON 欄位中的標題內容)
         if search_query:
-            # 使用 MySQL 的 JSON_SEARCH 或簡單將 JSON 轉為字串進行 LIKE 比對
-            # 這裡採用轉字串比對，可同時搜尋中英文標題
             statement = statement.where(
-                Download.title.cast(func.String).like(f"%{search_query}%")
+                or_(
+                    func.json_unquote(func.json_extract(Download.title, '$."zh-TW"')).like(f"%{search_query}%"),
+                    func.json_unquote(func.json_extract(Download.title, '$."en-US"')).like(f"%{search_query}%")
+                )
             )
 
         # 4. 計算總筆數 (Pagination 需要 total count)

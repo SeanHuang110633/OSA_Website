@@ -16,7 +16,7 @@ def get_downloads(
     size: int = Query(10, ge=1, le=100, description="每頁筆數"),
     
     # 2. 前端要求的篩選參數
-    type: Optional[str] = Query(None, description="資源類型 (regulation, form)"),
+    type: Optional[str] = Query(None, description="資源類型 (law, table)"),
     category_id: Optional[int] = Query(None, description="分類 ID"),
     query: Optional[str] = Query(None, description="標題模糊搜尋關鍵字"),
     
