@@ -9,6 +9,7 @@ from datetime import datetime
 
 class CategoryPublic(BaseModel):
     """分類顯示用 (扁平化後)"""
+    id: int
     slug: str
     name: str  # 已根據 locale 轉換後的名稱
 

@@ -48,6 +48,21 @@ class DownloadService:
             items=items
         )
 
+    def get_categories(self, locale: str) -> List[CategoryPublic]:
+        """
+        取得所有下載分類 (多語系轉換)，供前端下拉選單使用
+        """
+        raw_categories = self.repository.get_categories()
+
+        return [
+            CategoryPublic(
+                id=cat.id,
+                slug=cat.slug,
+                name=self._get_json_text(cat.names, locale, default="Unknown Category")
+            )
+            for cat in raw_categories
+        ]
+    
     # ==========================================
     # Private Helpers (DTO 轉換與邏輯處理)
     # ==========================================

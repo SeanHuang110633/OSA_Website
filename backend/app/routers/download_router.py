@@ -1,7 +1,7 @@
 # app/routers/download_router.py
 from typing import Optional
 from fastapi import APIRouter, Depends, Query, Path
-from app.schemas.download_schema import DownloadPaginationResponse, DownloadListView
+from app.schemas.download_schema import CategoryPublic, DownloadPaginationResponse, DownloadListView
 from app.services.download_service import DownloadService
 from app.dependencies import get_download_service
 
@@ -35,3 +35,13 @@ def get_downloads(
         category_id=category_id,
         query=query
     )
+
+@router.get("/categories", response_model=list[CategoryPublic])
+def get_categories(
+    locale: str = Query("zh-TW", description="語言代碼 (zh-TW, en-US)"),
+    service: DownloadService = Depends(get_download_service)
+):
+    """
+    取得下載分類列表 (多語系)
+    """
+    return service.get_categories(locale=locale)

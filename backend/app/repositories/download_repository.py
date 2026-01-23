@@ -44,6 +44,8 @@ class DownloadRepository:
 
         # 3. 模糊搜尋 (針對 JSON 欄位中的標題內容)
         if search_query:
+            # 注意：這邊使用了 MySQL 的 JSON 函數來搜尋多語系欄位中的內容
+            # 這邊先暫時只搜尋 zh-TW 和 en-US 兩種語言的標題
             statement = statement.where(
                 or_(
                     func.json_unquote(func.json_extract(Download.title, '$."zh-TW"')).like(f"%{search_query}%"),
@@ -67,17 +69,13 @@ class DownloadRepository:
         
         return results, total
 
-    def get_by_id(self, download_id: int) -> Optional[Download]:
+    def get_categories(self) -> List[DownloadCategory]:
         """
-        取得單一下載項目詳情
+        取得所有啟用的分類清單，用於前端過濾選單
         """
         statement = (
-            select(Download)
-            .where(Download.id == download_id)
-            .where(Download.deleted_at == None)
-            .options(
-                selectinload(Download.category),
-                selectinload(Download.attachments)
-            )
+            select(DownloadCategory)
+            .where(DownloadCategory.is_active == True)
+            .order_by(col(DownloadCategory.sort_order).asc())
         )
-        return self.session.exec(statement).first()
+        return self.session.exec(statement).all()
