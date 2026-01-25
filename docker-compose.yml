@@ -6,7 +6,6 @@ services:
       MYSQL_DATABASE: osa_newdb_test # 與 core.md 中的設定對應
       MYSQL_ROOT_PASSWORD: root
     volumes:
-      - db_data:/var/lib/mysql
       - ./seed.sql:/docker-entrypoint-initdb.d/seed.sql:ro # 自動初始化假資料
     ports:
       # 左邊改為 3307 (主機端, 避免與本機 MySQL 衝突)，右邊保持 3306 (容器端)
@@ -46,5 +45,5 @@ services:
     depends_on:
       - backend
 
-volumes:
-  db_data: # 資料庫持久化，確保重新啟動後資料不會消失
+# volumes:
+#   db_data: # 資料庫持久化，確保重新啟動後資料不會消失
