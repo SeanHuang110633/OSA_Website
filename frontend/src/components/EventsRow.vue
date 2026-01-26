@@ -426,9 +426,12 @@ function formatDateShort(dateStr) {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 56px;
-  height: 56px;
-  border-radius: 999px;
+  width: 44px;
+  height: 44px;
+
+  /* 去掉白圈與陰影 */
+  background: transparent;
+  box-shadow: none;
   border: 0;
   background: #fff;
   box-shadow: 0 10px 24px rgba(16, 24, 40, 0.14);
