@@ -2,7 +2,7 @@
   <div class="page">
     <TopBar />
     <NavBar />
-    <RouterView />
+    <router-view />
     <SiteFooter />
   </div>
 </template>
@@ -11,5 +11,4 @@
 import TopBar from "./components/TopBar.vue";
 import NavBar from "./components/NavBar.vue";
 import SiteFooter from "./components/SiteFooter.vue";
-import { RouterView } from "vue-router";
 </script>
