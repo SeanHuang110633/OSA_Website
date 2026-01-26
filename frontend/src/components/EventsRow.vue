@@ -545,6 +545,7 @@ function formatDateShort(dateStr) {
   border-color: rgba(15, 58, 99, 0.35);
 }
 
+
 .body {
   position: relative;
   padding: 0 58px;
@@ -593,6 +594,8 @@ function formatDateShort(dateStr) {
   transform: translateY(-50%);
   width: 44px;
   height: 44px;
+
+  /* 去掉白圈與陰影 */
   background: transparent;
   box-shadow: none;
   border: 0;
@@ -614,6 +617,7 @@ function formatDateShort(dateStr) {
 }
 .next {
   right: -6px;
+
 }
 
 /* ================= 卡片本體樣式 ================= */
