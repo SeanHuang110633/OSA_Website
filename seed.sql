@@ -100,6 +100,7 @@ CREATE TABLE `download_attachments` (
   `path` varchar(500) NOT NULL COMMENT '檔案相對路徑 或 外部 URL',
   `title` varchar(255) DEFAULT NULL,
   `sort_order` int NOT NULL DEFAULT '0',
+  `deleted_at` timestamp NULL DEFAULT NULL COMMENT '邏輯刪除',
   PRIMARY KEY (`id`),
   KEY `idx_dl_format` (`download_id`,`file_format`),
   CONSTRAINT `fk_dl_attach` FOREIGN KEY (`download_id`) REFERENCES `downloads` (`id`) ON DELETE CASCADE
@@ -112,7 +113,7 @@ CREATE TABLE `download_attachments` (
 
 LOCK TABLES `download_attachments` WRITE;
 /*!40000 ALTER TABLE `download_attachments` DISABLE KEYS */;
-INSERT INTO `download_attachments` VALUES (1,1,'file','pdf','/downloads/dorm_rules.pdf','法規全文 (PDF)',1),(2,1,'file','doc','/downloads/dorm_rules.docx','法規全文 (Word)',2),(3,2,'file','odf','/downloads/venue_form.odt','申請表 (ODT)',1),(4,2,'file','pdf','/downloads/venue_form.pdf','申請表 (PDF)',2),(5,3,'link',NULL,'https://scholarship.ncu.edu.tw/rules','線上查看',1);
+INSERT INTO `download_attachments` VALUES (1,1,'file','pdf','/downloads/dorm_rules.pdf','法規全文 (PDF)',1,NULL),(2,1,'file','doc','/downloads/dorm_rules.docx','法規全文 (Word)',2,NULL),(3,2,'file','odf','/downloads/venue_form.odt','申請表 (ODT)',1,NULL),(4,2,'file','pdf','/downloads/venue_form.pdf','申請表 (PDF)',2,NULL),(5,3,'link',NULL,'https://scholarship.ncu.edu.tw/rules','線上查看',1,NULL);
 /*!40000 ALTER TABLE `download_attachments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -127,6 +128,7 @@ CREATE TABLE `download_categories` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `slug` varchar(50) NOT NULL COMMENT '網址代碼 (如: scholarship)',
   `names` json NOT NULL COMMENT '{"zh-TW": "獎學金", "en-US": "Scholarships"}',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1:啟用, 0:停用',
   `sort_order` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_dl_slug` (`slug`)
@@ -139,7 +141,7 @@ CREATE TABLE `download_categories` (
 
 LOCK TABLES `download_categories` WRITE;
 /*!40000 ALTER TABLE `download_categories` DISABLE KEYS */;
-INSERT INTO `download_categories` VALUES (1,'scholarships','{\"en-US\": \"Scholarships\", \"zh-TW\": \"獎助學金\"}',1),(2,'regulations','{\"en-US\": \"Regulations\", \"zh-TW\": \"法規辦法\"}',2),(3,'forms','{\"en-US\": \"Forms\", \"zh-TW\": \"表單下載\"}',3);
+INSERT INTO `download_categories` VALUES (1,'scholarships','{\"en-US\": \"Scholarships\", \"zh-TW\": \"獎助學金\"}',1,1),(2,'regulations','{\"en-US\": \"Regulations\", \"zh-TW\": \"法規辦法\"}',1,2),(3,'forms','{\"en-US\": \"Forms\", \"zh-TW\": \"表單下載\"}',1,3);
 /*!40000 ALTER TABLE `download_categories` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -382,4 +384,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-01-25 17:23:12
+-- Dump completed on 2026-01-27 20:50:24
