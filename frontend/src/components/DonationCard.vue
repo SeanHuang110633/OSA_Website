@@ -10,9 +10,9 @@
       </div>
       <div class="card-actions">
         <div class="action-group">
-          <a :href="detailUrl" class="btn-detail">詳細資訊</a>
+          <a :href="detailUrl" target="_blank" rel="noopener noreferrer" class="btn-detail">詳細資訊</a>
           <span class="sep">|</span>
-          <a :href="donateUrl" class="btn-donate">我要捐款 <span class="arrow">→</span></a>
+          <a :href="donateUrl" target="_blank" rel="noopener noreferrer" class="btn-donate">我要捐款 <span class="arrow">→</span></a>
         </div>
       </div>
     </div>
