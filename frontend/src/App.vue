@@ -1,7 +1,7 @@
 <template>
-  <OriginalExamples />
+  <router-view />
 </template>
 
 <script setup>
-import OriginalExamples from "./pages/originalExamples.vue";
+// App shell uses router-view; routes defined in /src/router
 </script>
