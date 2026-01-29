@@ -10,9 +10,7 @@
       </div>
       <div class="card-actions">
         <div class="action-group">
-          <a :href="detailUrl" target="_blank" rel="noopener noreferrer" class="btn-detail">詳細資訊</a>
-          <span class="sep">|</span>
-          <a :href="donateUrl" target="_blank" rel="noopener noreferrer" class="btn-donate">我要捐款 <span class="arrow">→</span></a>
+          <a :href="detailUrl" target="_blank" rel="noopener noreferrer" class="btn-detail">詳細資訊 ｜ 我要捐款<span class="arrow">→</span></a>
         </div>
       </div>
     </div>
@@ -33,6 +31,7 @@ defineProps({
   display: flex;
   background: #fff;
   border-radius: 1rem;
+  border-bottom-right-radius: 0;
   border: 1px solid rgba(16, 24, 40, 0.1);
   overflow: hidden;
   margin-bottom: 2rem;
@@ -57,7 +56,8 @@ defineProps({
 
 .card-content {
   flex: 1;
-  padding: 2rem;
+  /* 右側內距設為0，讓按鈕可以貼齊卡片邊界 */
+  padding: 2rem 0 2rem 2rem;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -72,31 +72,49 @@ defineProps({
 
 .card-description {
   font-size: 0.95rem;
-  line-height: 1.6;
+  line-height: 1.9; /* 增加段落內行距 */
   color: #4b5563;
-  margin-bottom: 4rem; /* 為底部按鈕留空間 */
+  margin-bottom: 4.5rem; /* 為底部按鈕留空間 */
+}
+
+.card-description p {
+  margin-bottom: 1rem; /* 段落之間加大間距 */
 }
 
 .card-actions {
   position: absolute;
-  right: 1.5rem;
-  bottom: 1.5rem;
+  right: 0;
+  bottom: 0;
 }
 
 .action-group {
   display: flex;
   align-items: center;
   background: #bfa37e; /* 截圖中的大地色系按鈕 */
-  border-radius: 999px;
-  padding: 0.5rem 1.5rem;
+  /* 只有左上角為圓角，其餘為尖角 */
+  border-top-left-radius: 3rem;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  padding: 0; /* 由內部連結填滿空間，確保整塊可點擊 */
   color: #fff;
+  overflow: hidden;
+  height: 64px;
 }
 
 .action-group a {
+  display: flex;
+  align-items: center;
   color: #fff;
   text-decoration: none;
-  font-weight: 500;
-  font-size: 0.95rem;
+  font-weight: 400; /* 字體再細一些 */
+  font-size: 0.92rem;
+  padding: 0 3rem; /* 由群組控制高度，按鈕左右給予空間 */
+  height: 100%;
+}
+
+.action-group span {
+   padding-left: 0.5rem;
 }
 
 .sep {
@@ -124,5 +142,12 @@ defineProps({
     display: flex;
     justify-content: flex-end;
   }
+  .action-group {
+    min-width: 0;
+    width: 100%;
+    height: 56px;
+    border-radius: 12px;
+  }
+  .action-group a { padding: 0 1rem; }
 }
 </style>
