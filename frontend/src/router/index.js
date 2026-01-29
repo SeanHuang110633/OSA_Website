@@ -8,17 +8,6 @@ import ServiceResources from "../pages/ServiceResources.vue";
 import DownloadPage from "../pages/DownloadPage.vue";
 import AboutUs from "../pages/AboutUs.vue";
 
-const routes = [
-  { path: '/example', name: 'OriginalExamples', component: OriginalExamples },
-  { path: '/donate', name: 'Donate', component: Donate },
-  { path: '/', redirect: '/example' },
-]
-
-const router = createRouter({
-  history: createWebHistory(),
-  routes,
-})
-
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -28,6 +17,8 @@ const router = createRouter({
     // { path: "/downloads", name: "downloads", component: Downloads }, 先改成下面這個
     { path: "/downloads", name: "downloads", component: DownloadPage },
     { path: "/about", name: "about", component: AboutUs },
+    { path: '/example', name: 'OriginalExamples', component: OriginalExamples },
+    { path: '/donate', name: 'Donate', component: Donate },
   ],
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) return savedPosition;
