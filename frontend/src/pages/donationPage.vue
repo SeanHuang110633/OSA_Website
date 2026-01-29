@@ -1,5 +1,5 @@
 <template>
-  <main class="container page">
+  <main class="container page pl-10">
     <div class="crumb">
       <RouterLink class="crumb__home" to="/">首頁</RouterLink>
       <span class="crumb__sep">/</span>
@@ -58,7 +58,11 @@ import img3 from "../assets/img/donation/守護學子築夢共好.png";
 </script>
 
 <style scoped>
-.page { padding: 1.2rem 0 3.2rem; }
+.page { 
+  padding-top: 1.2rem; 
+  padding-left: 5rem;
+  padding-right: 5rem;
+}
 
 /* 沿用您的麵包屑樣式 */
 .crumb {
@@ -111,7 +115,7 @@ import img3 from "../assets/img/donation/守護學子築夢共好.png";
 }
 
 .donation-list {
-  width: min(70rem, 100%);
+  width: min(65rem, 100%);
   margin: 0 auto;
 }
 </style>
