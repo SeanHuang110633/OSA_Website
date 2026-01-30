@@ -44,111 +44,124 @@
         </h2>
 
         <div class="staffList">
-          <div v-if="loading" class="state">載入中…</div>
-          <div v-else-if="activeUnit.staff.length === 0" class="state">目前沒有資料。</div>
-          
-          <div v-for="member in activeUnit.staff" :key="member.id" class="staffCard">
-            <div class="avatarWrap">
-              <img 
-                :src="member.img || '/assets/images/default-avatar.png'" 
-                :alt="member.nameLine" 
-                class="avatar" 
-              />
-            </div>
-            <div class="info">
-              <div class="nameLine">{{ member.nameLine }}</div>
-              <div class="kv">
-                <div class="row">
-                  <div class="label">職稱</div>
-                  <div class="val">{{ member.title || '無' }}</div>
+
+            <div v-if="loading" class="state">載入中…</div>
+            <div v-else-if="errorMsg" class="state state--error">{{ errorMsg }}</div>
+            <div v-else-if="activePeople.length === 0" class="state">目前沒有資料。</div>
+
+            <article v-else v-for="p in activePeople" :key="p.id" class="staffCard">
+                <div class="avatarWrap">
+                <img class="avatar" :src="getAvatarUrl(p)" :alt="p.name || '成員頭像'" />
                 </div>
-                <div class="row">
-                  <div class="label">職掌</div>
-                  <div class="val">
-                    <div v-for="(line, index) in member.desc" :key="index">
-                      {{ line }}
+
+                <div class="info">
+                <div class="nameLine">{{ p.name }}</div>
+
+                <div class="kv">
+                    <div class="row">
+                    <div class="label">職稱：</div>
+                    <div class="val">{{ p.title }}</div>
                     </div>
-                  </div>
+                    <div class="row">
+                    <div class="label">公務信箱：</div>
+                    <div class="val link">
+                        <a v-if="p.email" :href="`mailto:${p.email}`">{{ p.email }}</a>
+                        <span v-else>—</span>
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="label">分機電話：</div>
+                    <div class="val">{{ p.ext || "—" }}</div>
+                    </div>
                 </div>
-                <div v-if="member.email" class="row">
-                  <div class="label">信箱</div>
-                  <a :href="`mailto:${member.email}`" class="val link">{{ member.email }}</a>
+
+                <div class="duty">{{ p.duty }}</div>
+                <div class="extra">{{ p.extra }}</div>
                 </div>
-                <div v-if="member.tel" class="row">
-                  <div class="label">電話</div>
-                  <div class="val">{{ member.tel }}</div>
-                </div>
-              </div>
+            </article>
             </div>
-          </div>
-        </div>
       </section>
     </div>
   </main>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      units: [],
-      activeUnitKey: null,
-      loading: true,
-    };
-  },
-  computed: {
-    activeUnit() {
-      const u = this.units.find((u) => u.key === this.activeUnitKey);
-      return u || { name: "", count: 0, staff: [] };
-    },
-  },
-  async created() {
-    await this.fetchMembers();
-  },
-  methods: {
-    async fetchMembers() {
-      this.loading = true;
-      try {
-        // 1. 確保連向後端 API，加上 /api 前綴
-        const response = await fetch('http://localhost:8000/api/members/?locale=zh-TW');
-        if (!response.ok) throw new Error('Network response was not ok');
-        
-        const data = await response.json();
 
-        // 2. 資料映射：將後端 JSON 欄位轉為前端 Template 使用的變數名
-        this.units = data.map(dept => {
-          // 只篩選在職成員 (status 1 或 3)
-          const activeMembers = dept.members.filter(m => m.status === 1 || m.status === 3);
-          
-          return {
-            key: dept.id.toString(),
-            name: dept.name,
-            count: activeMembers.length,
-            staff: activeMembers.map(m => ({
-              id: m.id,
-              nameLine: m.name,       // 對應 template 裡的 member.nameLine
-              title: m.job_title,    // 對應 template 裡的 member.title
-              desc: m.job_description, // 陣列格式
-              email: m.email,
-              tel: m.tel,
-              // 補上後端圖片路徑
-              img: m.photo_path ? `http://localhost:8000/uploads/${m.photo_path}` : null
-            }))
-          };
-        });
+<script setup>
+import { computed, ref, onMounted } from "vue";
+import { RouterLink } from "vue-router";
+import avatarPlaceholder from "../assets/avatar_placeholder.png";
+import { fetchMembers } from "@/api/member"; // ✅ 新增：member API
 
-        // 預設展開第一個部門
-        if (this.units.length > 0) {
-          this.activeUnitKey = this.units[0].key;
-        }
-      } catch (err) {
-        console.error("無法取得成員資料:", err);
-      } finally {
-        this.loading = false;
-      }
-    },
-  },
-};
+// ✅ 這裡的 key 要跟後端回傳的 unit_key / unitKey 對得上
+const unitDefs = [
+  { key: "osa", name: "學務處" },
+  { key: "life", name: "生活輔導組" },
+  { key: "coun", name: "諮商輔導中心" },
+  { key: "club", name: "課外活動組" },
+  { key: "sl", name: "服務學習發展中心" },
+  { key: "dorm", name: "住宿服務組" },
+  { key: "health", name: "衛生保健組" },
+  { key: "career", name: "職涯發展中心" },
+  { key: "indig", name: "原住民族學生資源中心" },
+];
+
+const activeUnitKey = ref("osa");
+
+// ✅ API 狀態
+const loading = ref(false);
+const errorMsg = ref("");
+const members = ref([]);
+
+// ✅ 取得資料
+async function loadMembers() {
+  loading.value = true;
+  errorMsg.value = "";
+  try {
+    const res = await fetchMembers({ locale: "zh-TW", page: 1, size: 200 });
+    const data = res?.data;
+
+    // 兼容：array / {items} / {data:{items}}
+    const items = data?.items ?? data?.data?.items ?? data?.data ?? data ?? [];
+    members.value = Array.isArray(items) ? items : [];
+  } catch (e) {
+    console.error(e);
+    errorMsg.value = "成員資料載入失敗，請稍後再試。";
+    members.value = [];
+  } finally {
+    loading.value = false;
+  }
+}
+
+onMounted(loadMembers);
+
+// ✅ 將 members 依 unitKey 分組（這裡假設後端給 unit_key 或 unitKey）
+const membersByUnit = computed(() => {
+  const map = {};
+  for (const m of members.value) {
+    const key = m.unit_key ?? m.unitKey ?? "osa"; // 沒有就先丟 osa（避免爆）
+    (map[key] ||= []).push(m);
+  }
+  return map;
+});
+
+// ✅ units 用「def + count」組合，count 用資料算
+const units = computed(() =>
+  unitDefs.map((u) => ({
+    ...u,
+    count: (membersByUnit.value[u.key] || []).length,
+  }))
+);
+
+const activeUnit = computed(
+  () => units.value.find((u) => u.key === activeUnitKey.value) || units.value[0]
+);
+
+const activePeople = computed(() => membersByUnit.value[activeUnitKey.value] || []);
+
+// ✅ 頭像：如果後端有 avatar_url 就用，沒有就用 placeholder
+function getAvatarUrl(p) {
+  return p.avatar_url || p.avatarUrl || avatarPlaceholder;
+}
 </script>
 <style scoped>
 .page {
@@ -417,6 +430,16 @@ export default {
   background: rgba(0,0,0,.04);
   /* 修正：狀態提示 16px */
   font-size: var(--text-base);
+  color: #334155;
+}
+.state--error {
+  background: rgba(255,0,0,.06);
+  color: #991b1b;
+}
+.state {
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(0,0,0,.04);
   color: #334155;
 }
 .state--error {
