@@ -44,90 +44,122 @@
         </h2>
 
         <div class="staffList">
-          <article v-for="p in activePeople" :key="p.id" class="staffCard">
-            <div class="avatarWrap">
-              <img class="avatar" :src="avatarPlaceholder" alt="匿名頭像" />
+            <div v-if="loading" class="state">載入中…</div>
+            <div v-else-if="errorMsg" class="state state--error">{{ errorMsg }}</div>
+            <div v-else-if="activePeople.length === 0" class="state">目前沒有資料。</div>
+
+            <article v-else v-for="p in activePeople" :key="p.id" class="staffCard">
+                <div class="avatarWrap">
+                <img class="avatar" :src="getAvatarUrl(p)" :alt="p.name || '成員頭像'" />
+                </div>
+
+                <div class="info">
+                <div class="nameLine">{{ p.name }}</div>
+
+                <div class="kv">
+                    <div class="row">
+                    <div class="label">職稱：</div>
+                    <div class="val">{{ p.title }}</div>
+                    </div>
+                    <div class="row">
+                    <div class="label">公務信箱：</div>
+                    <div class="val link">
+                        <a v-if="p.email" :href="`mailto:${p.email}`">{{ p.email }}</a>
+                        <span v-else>—</span>
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="label">分機電話：</div>
+                    <div class="val">{{ p.ext || "—" }}</div>
+                    </div>
+                </div>
+
+                <div class="duty">{{ p.duty }}</div>
+                <div class="extra">{{ p.extra }}</div>
+                </div>
+            </article>
             </div>
-
-            <div class="info">
-              <div class="nameLine">{{ p.name }}</div>
-
-              <div class="kv">
-                <div class="row">
-                  <div class="label">職稱：</div>
-                  <div class="val">{{ p.title }}</div>
-                </div>
-                <div class="row">
-                  <div class="label">公務信箱：</div>
-                  <div class="val link">{{ p.email }}</div>
-                </div>
-                <div class="row">
-                  <div class="label">分機電話：</div>
-                  <div class="val">{{ p.ext }}</div>
-                </div>
-              </div>
-
-              <div class="duty">{{ p.duty }}</div>
-              <div class="extra">{{ p.extra }}</div>
-            </div>
-          </article>
-        </div>
       </section>
     </div>
   </main>
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
 import { RouterLink } from "vue-router";
 import avatarPlaceholder from "../assets/avatar_placeholder.png";
+import { fetchMembers } from "@/api/member"; // ✅ 新增：member API
 
-const units = [
-  { key: "osa", name: "學務處", count: 7 },
-  { key: "life", name: "生活輔導組", count: 15 },
-  { key: "coun", name: "諮商輔導中心", count: 18 },
-  { key: "club", name: "課外活動組", count: 7 },
-  { key: "sl", name: "服務學習發展中心", count: 4 },
-  { key: "dorm", name: "住宿服務組", count: 22 },
-  { key: "health", name: "衛生保健組", count: 9 },
-  { key: "career", name: "職涯發展中心", count: 7 },
-  { key: "indig", name: "原住民族學生資源中心", count: 1 },
+// ✅ 這裡的 key 要跟後端回傳的 unit_key / unitKey 對得上
+const unitDefs = [
+  { key: "osa", name: "學務處" },
+  { key: "life", name: "生活輔導組" },
+  { key: "coun", name: "諮商輔導中心" },
+  { key: "club", name: "課外活動組" },
+  { key: "sl", name: "服務學習發展中心" },
+  { key: "dorm", name: "住宿服務組" },
+  { key: "health", name: "衛生保健組" },
+  { key: "career", name: "職涯發展中心" },
+  { key: "indig", name: "原住民族學生資源中心" },
 ];
 
 const activeUnitKey = ref("osa");
 
-const activeUnit = computed(
-  () => units.find((u) => u.key === activeUnitKey.value) || units[0]
-);
+// ✅ API 狀態
+const loading = ref(false);
+const errorMsg = ref("");
+const members = ref([]);
 
-function makePeople(unitKey, unitName, count) {
-  return Array.from({ length: count }, (_, i) => {
-    const idx = String(i + 1).padStart(2, "0");
-    return {
-      id: `${unitKey}-${idx}`,
-      name: `${unitName} 第${idx}人`,
-      title: "職稱待補",
-      email: "xxx@ncu.edu.tw",
-      ext: "分機待補",
-      duty: "（待補）協助本處/本組相關業務（可多行）。",
-      extra: "（待補）可放第二段介紹或職務重點。",
-    };
-  });
+// ✅ 取得資料
+async function loadMembers() {
+  loading.value = true;
+  errorMsg.value = "";
+  try {
+    const res = await fetchMembers({ locale: "zh-TW", page: 1, size: 200 });
+    const data = res?.data;
+
+    // 兼容：array / {items} / {data:{items}}
+    const items = data?.items ?? data?.data?.items ?? data?.data ?? data ?? [];
+    members.value = Array.isArray(items) ? items : [];
+  } catch (e) {
+    console.error(e);
+    errorMsg.value = "成員資料載入失敗，請稍後再試。";
+    members.value = [];
+  } finally {
+    loading.value = false;
+  }
 }
 
-const peopleByUnit = {
-  osa: makePeople("osa", "學務處", 7),
-  life: makePeople("life", "生活輔導組", 15),
-  coun: makePeople("coun", "諮商輔導中心", 18),
-  club: makePeople("club", "課外活動組", 7),
-  sl: makePeople("sl", "服務學習發展中心", 4),
-  dorm: makePeople("dorm", "住宿服務組", 22),
-  health: makePeople("health", "衛生保健組", 9),
-  career: makePeople("career", "職涯發展中心", 7),
-  indig: makePeople("indig", "原住民族學生資源中心", 1),
-};
+onMounted(loadMembers);
 
-const activePeople = computed(() => peopleByUnit[activeUnitKey.value] || []);
+// ✅ 將 members 依 unitKey 分組（這裡假設後端給 unit_key 或 unitKey）
+const membersByUnit = computed(() => {
+  const map = {};
+  for (const m of members.value) {
+    const key = m.unit_key ?? m.unitKey ?? "osa"; // 沒有就先丟 osa（避免爆）
+    (map[key] ||= []).push(m);
+  }
+  return map;
+});
+
+// ✅ units 用「def + count」組合，count 用資料算
+const units = computed(() =>
+  unitDefs.map((u) => ({
+    ...u,
+    count: (membersByUnit.value[u.key] || []).length,
+  }))
+);
+
+const activeUnit = computed(
+  () => units.value.find((u) => u.key === activeUnitKey.value) || units.value[0]
+);
+
+const activePeople = computed(() => membersByUnit.value[activeUnitKey.value] || []);
+
+// ✅ 頭像：如果後端有 avatar_url 就用，沒有就用 placeholder
+function getAvatarUrl(p) {
+  return p.avatar_url || p.avatarUrl || avatarPlaceholder;
+}
 </script>
 
 <style scoped>
@@ -374,5 +406,15 @@ const activePeople = computed(() => peopleByUnit[activeUnitKey.value] || []);
     width: 10rem;
     height: 10rem;
   }
+}
+.state {
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(0,0,0,.04);
+  color: #334155;
+}
+.state--error {
+  background: rgba(255,0,0,.06);
+  color: #991b1b;
 }
 </style>
