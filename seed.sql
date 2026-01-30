@@ -491,3 +491,26 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2026-01-30 15:19:32
+
+-- =========================================================
+-- Members
+-- =========================================================
+CREATE TABLE IF NOT EXISTS members (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  title VARCHAR(100) NULL,
+  email VARCHAR(255) NULL,
+  ext VARCHAR(50) NULL,
+  duty TEXT NULL,
+  extra TEXT NULL,
+  avatar_url VARCHAR(500) NULL,
+  is_active TINYINT(1) NOT NULL DEFAULT 1,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+INSERT INTO members (name, title, email, ext, duty, extra, avatar_url, is_active)
+VALUES
+('陳思妤', '學務長', 'sychen@dop.ncu.edu.tw', '57200(學)/65276(研)', '綜理學務處業務', NULL, NULL, 1),
+('鐘志忠', '副學務長', 'ccchung@ncu.edu.tw', '57200(學)/34120(研)', '
+協助學務長綜理全校學生事務工作', NULL, NULL, 1);
