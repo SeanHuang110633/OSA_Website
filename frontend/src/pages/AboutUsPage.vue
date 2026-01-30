@@ -90,7 +90,7 @@
 import { computed, ref, onMounted } from "vue";
 import { RouterLink } from "vue-router";
 import avatarPlaceholder from "../assets/avatar_placeholder.png";
-import { fetchMembers } from "@/api/member"; // ✅ 新增：member API
+import { fetchMembers } from "../api/member"; // ✅ 新增：member API
 
 // ✅ 這裡的 key 要跟後端回傳的 unit_key / unitKey 對得上
 const unitDefs = [
