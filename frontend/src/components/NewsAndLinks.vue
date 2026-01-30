@@ -105,7 +105,7 @@ const goToNewsList = () => {
 
 const goToDetail = (id) => {
   // 導向詳情頁 (未來實作詳情頁時使用)
-  // router.push({ name: 'event-detail', params: { id } });
+  router.push({ name: "event-detail", params: { id } });
   console.log(`Go to event detail: ${id}`);
 };
 
