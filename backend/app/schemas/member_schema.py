@@ -1,24 +1,32 @@
-"""
-Member Schema
-"""
-
+# app/schemas/member_schema.py
+from typing import Optional, List
 from pydantic import BaseModel
-from typing import List, Optional
 
 
-class MemberListItem(BaseModel):
-    """AboutUs/成員列表用的最小欄位集合（後續可再擴充）"""
+class DepartmentPublic(BaseModel):
     id: int
     name: str
-    title: Optional[str] = None
     email: Optional[str] = None
-    ext: Optional[str] = None
-    duty: Optional[str] = None
-    extra: Optional[str] = None
-    avatar_url: Optional[str] = None
+    website_url: Optional[str] = None
+    image_path: Optional[str] = None
 
 
-class MemberPaginationResponse(BaseModel):
-    """成員列表回傳：items + total（先做成跟 download 類似的分頁回傳）"""
-    items: List[MemberListItem]
-    total: int
+class MemberPublic(BaseModel):
+    id: int
+    department_id: int
+    name: str
+
+    job_title: Optional[str] = None
+    job_description: List[str] = []
+
+    email: Optional[str] = None
+    tel: Optional[str] = None
+    photo_path: Optional[str] = None
+
+    status: int
+    sort_order: int
+
+
+class DepartmentWithMembers(BaseModel):
+    department: DepartmentPublic
+    members: List[MemberPublic]
