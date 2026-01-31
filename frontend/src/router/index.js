@@ -1,5 +1,6 @@
-import { createRouter, createWebHistory } from "vue-router";
-
+import { createRouter, createWebHistory } from 'vue-router'
+import OriginalExamples from '../pages/originalExamples.vue'
+import Donate from '../pages/donationPage.vue'
 import Home from "../pages/Home.vue";
 import NewsList from "../pages/NewsList.vue";
 import ServiceResources from "../pages/ServiceResources.vue";
@@ -18,6 +19,8 @@ const router = createRouter({
     // { path: "/downloads", name: "downloads", component: Downloads }, 先改成下面這個
     { path: "/downloads", name: "downloads", component: DownloadPage },
     { path: "/about", name: "about", component: AboutUs },
+    { path: '/example', name: 'OriginalExamples', component: OriginalExamples },
+    { path: '/donate', name: 'Donate', component: Donate },
   ],
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) return savedPosition;
