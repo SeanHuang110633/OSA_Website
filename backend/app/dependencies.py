@@ -15,6 +15,8 @@ from app.services.member_service import MemberService
 
 from app.services.activity_service import ActivityService
 from app.repositories.activity_repository import ActivityRepository
+from app.repositories.member_repository import MemberRepository
+from app.services.member_service import MemberService
 
 # event_service 依賴注入工廠 (Dependency Injection Factory)
 def get_event_service(session: Session = Depends(get_session)) -> EventService:
@@ -33,7 +35,6 @@ def get_activity_service(session: Session = Depends(get_session)) -> ActivitySer
 
 def get_member_service(session: Session = Depends(get_session)) -> MemberService:
     return MemberService(MemberRepository(session))
-
 
 # activity_service 依賴注入工廠
 def get_activity_service(session: Session = Depends(get_session)) -> ActivityService:
