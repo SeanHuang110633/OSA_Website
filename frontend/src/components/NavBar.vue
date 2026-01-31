@@ -247,18 +247,24 @@ const links = {
   gap: 18px;
   flex-wrap: nowrap;
 }
+
 .item {
-  font-weight: 900;
-  /* 修正：主要導覽列文字統一為 18px (lg) */
+  /* 保持原本的粗體作為預設 */
+  font-weight: 550; 
   font-size: var(--text-lg);
-  color:#111827;
+  color: #111827;
   white-space: nowrap;
   text-decoration: none;
-}
-.item:hover {
-  text-decoration: underline;
+  /* 加入轉場效果，讓字體變細時平滑一點 */
+  transition: font-weight 0.2s ease, color 0.2s ease; 
 }
 
+/* 修改：Hover 時將字體改細 */
+.item:hover {
+  font-weight: 100; /* 或者使用 500，視你喜歡的細度而定 */
+  text-decoration: underline;
+  color: var(--blue-900); /* 建議 hover 時也可以微調顏色增加互動感 */
+}
 .vline {
   width: 1px;
   height: 26px;
@@ -272,7 +278,7 @@ const links = {
   align-items: center;
 }
 
-/* ✅ 移除醜框框：button 跟一般 nav item 一致 */
+/* 移除醜框框：button 跟一般 nav item 一致 */
 .item.has {
   background: transparent !important;
   border: 0 !important;
@@ -281,11 +287,12 @@ const links = {
   box-shadow: none !important;
   cursor: pointer;
 }
+/* 針對下拉選單按鈕 (has) 的 hover 也要同步 */
 .item.has:hover {
   background: transparent;
+  font-weight: 400; 
   text-decoration: underline;
 }
-
 /* caret */
 .caret {
   font-size: 12px;
