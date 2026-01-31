@@ -8,6 +8,7 @@ from app.core.database import engine # 直接引入 engine，確保資料庫連�
 from app.routers import event_router  # 8. 引入「活動消息模組」的 API Router
 from app.routers import download_router
 from app.routers import activity_router  # 引入「下載資源模組」的 API Router
+from app.routers import resource_router
 
 
 # =========================================================
@@ -70,6 +71,7 @@ app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads") # 讓 /u
 app.include_router(event_router.router, prefix="/api")
 app.include_router(download_router.router, prefix="/api")
 app.include_router(activity_router.router, prefix="/api")
+app.include_router(resource_router.router, prefix="/api")
 
 # =========================================================
 # 程式進入點

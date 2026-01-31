@@ -6,6 +6,8 @@ import DownloadPage from "../pages/DownloadPage.vue";
 import AboutUsPage from "../pages/AboutUsPage.vue";
 import EventDetailPage from "../pages/EventDetailPage.vue";
 import DonationPage from "../pages/DonationPage.vue";
+import ServiceResourceDetailPage from "../pages/ServiceResourceDetailPage.vue";
+
 
 const router = createRouter({
   history: createWebHistory(),
@@ -17,6 +19,7 @@ const router = createRouter({
     { path: "/downloads", name: "downloads", component: DownloadPage },
     { path: "/about", name: "about", component: AboutUsPage },
     { path: "/donate", name: "donate", component: DonationPage },
+    { path: "/resources/:id", name: "resource-detail", component: ServiceResourceDetailPage },
   ],
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) return savedPosition;
