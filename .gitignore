@@ -9,3 +9,9 @@ db_data/
 # 編輯器設定 (選配)
 .vscode/
 .idea/
+
+# 忽略所有實體檔案
+uploads/**/*
+
+# 不要忽略 .gitkeep以保留資料夾結構
+!uploads/**/.gitkeep
