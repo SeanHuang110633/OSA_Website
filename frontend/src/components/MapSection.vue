@@ -56,7 +56,7 @@ iframe {
 /* 吉祥物 */
 .animal {
   position: absolute;
-  width: 4.6rem;
+  width: 8rem;
   height: auto;
   bottom: -1.2rem;
 }
