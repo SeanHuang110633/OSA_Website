@@ -130,31 +130,25 @@ import { onMounted, reactive, ref, watch, computed } from "vue";
 import { RouterLink } from "vue-router";
 import { getDownloads, getCategories } from "../api/download.js";
 
-// --- 狀態管理 ---
-const allRows = ref([]); // API 回傳的列表資料
-const totalCount = ref(0); // API 回傳的總筆數
-const categoryList = ref([]); // API 回傳的分類清單
+const allRows = ref([]); 
+const totalCount = ref(0); 
+const categoryList = ref([]); 
 const page = ref(1);
-const pageSize = 10; // 設定每頁顯示筆數
+const pageSize = 10; 
 
-// --- 映射設定 ---
 const kindMap = {
   regulation: "法規",
   form: "表單",
-  other: "其他", // 對應 document 或其他
+  other: "其他", 
 };
 const kindOptions = Object.keys(kindMap);
 
-// --- 搜尋表單 ---
 const form = reactive({
   kind: "",
-  catId: "", // 改用 ID
+  catId: "", 
   keyword: "",
 });
 
-// --- API 請求 ---
-
-// 1. 取得分類
 async function fetchCategories() {
   try {
     const res = await getCategories("zh-TW");
@@ -164,7 +158,6 @@ async function fetchCategories() {
   }
 }
 
-// 2. 取得列表
 async function fetchList() {
   try {
     const res = await getDownloads({
@@ -175,7 +168,6 @@ async function fetchList() {
       category_id: form.catId || null,
       query: form.keyword || null,
     });
-
     allRows.value = res.items;
     totalCount.value = res.total;
   } catch (err) {
@@ -183,10 +175,8 @@ async function fetchList() {
   }
 }
 
-// --- 操作行為 ---
-
 function applySearch() {
-  page.value = 1; // 搜尋時重置頁碼
+  page.value = 1; 
   fetchList();
 }
 
@@ -197,19 +187,14 @@ function reset() {
   applySearch();
 }
 
-// --- 分頁邏輯 ---
-
-// 計算總頁數 (依賴 API 回傳的 totalCount)
 const totalPages = computed(() =>
   Math.max(1, Math.ceil(totalCount.value / pageSize)),
 );
 
-// 監聽頁碼變動，自動發送請求
 watch(page, () => {
   fetchList();
 });
 
-// 計算分頁按鈕顯示範圍
 const pageButtons = computed(() => {
   const maxButtons = 5;
   let start = page.value - 2;
@@ -228,7 +213,6 @@ const pageButtons = computed(() => {
   return buttons;
 });
 
-// --- 初始化 ---
 onMounted(() => {
   fetchCategories();
   fetchList();
@@ -241,12 +225,8 @@ onMounted(() => {
 }
 .crumb {
   color: #6b7280;
-  font-size: 12px;
-  margin: 10px 0 18px;
-}
-.crumb {
-  color: #6b7280;
-  font-size: 12px;
+  /* 修正：消滅 12px，改用 Meta 資訊標準 14px */
+  font-size: var(--text-sm); 
   margin: 10px 0 18px;
   display: flex;
   align-items: center;
@@ -291,6 +271,8 @@ onMounted(() => {
   flex-wrap: wrap;
 }
 .lab {
+  /* 修正：標籤文字標準化 16px */
+  font-size: var(--text-base);
   font-weight: 900;
   color: #0f172a;
 }
@@ -301,6 +283,8 @@ onMounted(() => {
   border: 2px solid rgba(16, 24, 40, 0.16);
   background: #fff;
   padding: 0 12px;
+  /* 修正：下拉選單文字標準化 16px */
+  font-size: var(--text-base);
   font-weight: 900;
 }
 .kw {
@@ -310,6 +294,8 @@ onMounted(() => {
   border: 2px solid rgba(16, 24, 40, 0.16);
   padding: 0 14px;
   background: #fff;
+  /* 修正：搜尋框文字標準化 16px */
+  font-size: var(--text-base);
   font-weight: 900;
   outline: none;
 }
@@ -324,6 +310,8 @@ onMounted(() => {
   border-radius: 999px;
   border: 0;
   background: #f2cf57;
+  /* 修正：按鈕文字標準化 16px */
+  font-size: var(--text-base);
   font-weight: 900;
   cursor: pointer;
 }
@@ -337,6 +325,8 @@ onMounted(() => {
   border-radius: 999px;
   border: 1px solid rgba(16, 24, 40, 0.18);
   background: #fff;
+  /* 修正：按鈕文字標準化 16px */
+  font-size: var(--text-base);
   font-weight: 900;
   cursor: pointer;
 }
@@ -352,6 +342,8 @@ onMounted(() => {
 }
 thead th {
   padding: 18px 10px 14px;
+  /* 修正：表頭文字標準化 16px */
+  font-size: var(--text-base);
   font-weight: 900;
   text-align: center;
   border-bottom: 1px solid rgba(16, 24, 40, 0.55);
@@ -360,6 +352,8 @@ tbody td {
   padding: 18px 10px;
   border-bottom: 1px solid rgba(16, 24, 40, 0.12);
   vertical-align: middle;
+  /* 修正：內文標準化 16px */
+  font-size: var(--text-base);
   font-weight: 400;
 }
 .tdCenter {
@@ -368,17 +362,22 @@ tbody td {
 
 .titleCell .zh {
   font-weight: 400;
-  line-height: 1.6;
+  /* 修正：套用內文行高規範 */
+  line-height: var(--leading-normal);
 }
 .titleCell .en {
   margin-top: 10px;
   font-weight: 400;
   color: #111827;
-  line-height: 1.6;
+  line-height: var(--leading-normal);
 }
 .mini {
   margin-left: 8px;
   text-decoration: none;
+}
+.mini small {
+  /* 修正：副標註使用極小字規範 12px */
+  font-size: var(--text-xs);
 }
 .unit {
   color: #111827;
@@ -387,6 +386,8 @@ tbody td {
 .empty {
   text-align: center;
   color: #98a2b3;
+  /* 修正：提示文字標準化 16px */
+  font-size: var(--text-base);
   font-weight: 900;
   padding: 26px 0;
 }
@@ -401,6 +402,8 @@ tbody td {
 .count {
   margin-right: auto;
   color: #98a2b3;
+  /* 修正：筆數顯示改用 14px */
+  font-size: var(--text-sm);
   font-weight: 400;
 }
 
@@ -408,10 +411,14 @@ tbody td {
   display: flex;
   gap: 10px;
   align-items: center;
+  /* 修正：分頁文字標準化 16px */
+  font-size: var(--text-base);
   font-weight: 400;
 }
 .pg {
   font-weight: 400;
+  /* 修正：繼承父層 16px */
+  font-size: inherit; 
 }
 .pg.on {
   font-weight: 700;

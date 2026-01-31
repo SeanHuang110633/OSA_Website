@@ -205,7 +205,6 @@ function updateItemsPerView() {
 onMounted(async () => {
   updateItemsPerView();
   window.addEventListener("resize", updateItemsPerView);
-
   loading.value = true;
   try {
     const data = await getActivities();
@@ -340,29 +339,20 @@ function formatDateShort(dateStr) {
   gap: 16px;
   margin-bottom: 26px;
 }
-.title {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.bar {
-  width: 10px;
-  height: 32px;
-  background: #f2cf57;
-  border-radius: 2px;
-}
+
+.title{ display:flex; align-items:center; gap: 14px; }
+.bar{ width: 10px; height: 32px; background:#f2cf57; border-radius:2px; }
+
 .t {
-  font-size: 1.5rem;
+  /* 修正：區塊標題統一使用 24px */
+  font-size: var(--text-2xl); 
   font-weight: 700;
   color: #0f172a;
   letter-spacing: 0.2px;
 }
 
-.modes {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+
+.modes{ display:flex; align-items:center; gap: 10px; }
 .mode {
   height: 42px;
   padding: 0 18px;
@@ -371,8 +361,9 @@ function formatDateShort(dateStr) {
   background: #fff;
   color: #6b7280;
   font-weight: 700;
-  font-size: 0.95rem;
-  cursor: pointer;
+  /* 修正：切換按鈕標準化為 16px */
+  font-size: var(--text-base); 
+  cursor:pointer;
 }
 .mode.on {
   background: #0f3a63;
@@ -391,71 +382,49 @@ function formatDateShort(dateStr) {
   font-weight: 600;
 }
 
-/* ================= 輪播 (Slider) 核心樣式 ================= */
-.slider-body {
-  overflow: hidden; /* 隱藏超出的部分 */
-}
 
-.slider-viewport {
-  overflow: hidden;
-  width: 100%;
-  /* 為了讓陰影不被裁切，上下留點空間 (視需要調整) */
-  padding: 10px 0 20px 0;
-  margin: -10px 0 -20px 0;
-}
-
-/* 軌道：Flex 排列，透過 JS 控制 transform */
-.track {
-  display: flex;
-  width: 100%;
-  will-change: transform; /* 效能優化 */
-}
-
-/* 卡片外層容器：負責寬度與間距 */
-.card-wrapper {
-  /* 預設桌面版：顯示 4 個 => 25% */
-  flex: 0 0 25%;
-  max-width: 25%;
-  /* 使用 padding 來製造卡片間的 gap，這樣算 % 比較準 */
-  padding: 0 11px;
-  box-sizing: border-box;
-}
-
-/* 導航按鈕 */
-.nav {
-  position: absolute;
+.nav{
+  position:absolute;
   top: 50%;
   transform: translateY(-50%);
   width: 44px;
   height: 44px;
-
-  /* 去掉白圈與陰影 */
   background: transparent;
   box-shadow: none;
   border: 0;
-  background: #fff;
-  box-shadow: 0 10px 24px rgba(16, 24, 40, 0.14);
-  cursor: pointer;
-  font-size: 34px;
-  color: #0f172a;
-  display: grid;
-  place-items: center;
-  z-index: 2;
-  transition: filter 0.2s;
-}
-.nav:hover {
-  filter: brightness(0.95);
-}
-.prev {
-  left: -6px;
-}
-.next {
-  right: -6px;
+
+  border-radius: 0;
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+  font-size: 40px;
+  line-height: 1;
+  color: rgba(15,23,42,.55);     
+  z-index: 5;
+  padding: 10px;
 }
 
-/* ================= 卡片本體樣式 ================= */
-.card {
-  background: #fff;
+.prev{ left: -22px; }
+.next{ right: -22px; }
+
+.nav:hover{ color: rgba(15,23,42,.85); }
+.nav:active{ transform: translateY(-50%) scale(.96); }
+
+.nav:focus-visible{
+  outline: 2px solid rgba(59,130,246,.55);
+  outline-offset: 4px;
+}
+.prev{ left: -6px; }
+.next{ right: -6px; }
+
+.track{
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+  align-items: stretch;
+}
+.card{
+  background:#fff;
   border-radius: 18px;
   border: 1px solid rgba(16, 24, 40, 0.1);
   box-shadow: 0 8px 18px rgba(16, 24, 40, 0.06);
@@ -483,13 +452,10 @@ function formatDateShort(dateStr) {
   object-fit: cover;
 }
 
-.status-badge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  padding: 4px 12px;
-  border-radius: 6px;
-  font-size: 0.8rem;
+
+.date {
+  /* 修正：輔助資訊標準化為 14px */
+  font-size: var(--text-sm); 
   font-weight: 700;
   color: #fff;
   background: rgba(0, 0, 0, 0.6);
@@ -497,71 +463,158 @@ function formatDateShort(dateStr) {
   z-index: 1;
 }
 
-.content {
-  padding: 16px 16px 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+.name {
+  /* 修正：卡片標題使用 20px */
+  font-size: var(--text-xl); 
+  font-weight: 700;
+  color:#111827;
+  line-height: var(--leading-tight); /* 1.3 */
+}
+.desc {
+  color:#6b7280;
+  /* 修正：內文標準化為 16px 並設定行高 1.6 */
+  font-size: var(--text-base); 
+  line-height: var(--leading-normal); 
   flex: 1;
 }
 
-.meta-row {
-  display: flex;
-  align-items: center;
-  font-size: 0.8rem;
-  color: #6b7280;
-  background: #f8fafc;
-  padding: 6px 10px;
-  border-radius: 6px;
-  margin-bottom: 4px;
-}
-.meta-item {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.meta-item .label {
-  font-weight: 500;
-}
-.meta-item .val {
+.more {
+  align-self:flex-start;
+  margin-top: 4px;
+  width: 140px;
+  height: 42px;
+  border-radius: 999px;
+  border: 0;
+  background:#f2cf57;
+  color:#111827;
   font-weight: 700;
-  color: #0f3a63;
+  /* 修正：按鈕標準化為 16px */
+  font-size: var(--text-base); 
+  cursor:pointer;
 }
-.meta-divider {
-  margin: 0 8px;
-  color: #cbd5e1;
+.more:hover{ filter: brightness(.97); }
+.more.small{ width: 128px; height: 40px; font-size: var(--text-base); }
+
+.listWrap{ padding: 0 6px; }
+.list{
+  border: 1px solid rgba(16,24,40,.10);
+  border-radius: 16px;
+  overflow:hidden;
+}
+.row{
+  display:grid;
+  grid-template-columns: 220px 1fr 160px;
+  gap: 16px;
+  align-items:center;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(16,24,40,.10);
+  background:#fff;
+}
+.row:last-child{ border-bottom:0; }
+
+/* 修正：列表日期使用 14px */
+.rDate .d1{ font-size: var(--text-sm); font-weight: 700; color:#0f3a63; }
+.rDate .d2 { 
+  margin-top: 6px; 
+  font-size: var(--text-xs); /* 12px */
+  color:#6b7280; 
+  font-weight: 600; 
 }
 
-.date {
-  font-size: 0.9rem;
-  color: #3b82f6;
-  font-weight: 700;
+/* 修正：列表標題使用 20px */
+.rTitle { 
+  font-size: var(--text-xl); 
+  font-weight: 700; 
+  color:#111827; 
+}
+/* 修正：列表描述使用 16px 並設定行高 1.6 */
+.rDesc { 
+  margin-top: 6px; 
+  font-size: var(--text-base); 
+  color:#6b7280; 
+  line-height: var(--leading-normal); 
 }
 
-.name {
-  font-size: 1.1rem;
+.rAct{ display:flex; justify-content:flex-end; }
+
+.weekWrap{ padding: 0 6px; }
+.weekHead{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap: 14px;
+  margin: 6px 0 14px;
+}
+.wkBtn{
+  width: 42px; height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(16,24,40,.16);
+  background:#fff;
+  cursor:pointer;
+  font-size: 22px;
+}
+/* 修正：週曆標題標準化為 18px (lg) */
+.wkTitle {
   font-weight: 700;
-  color: #111827;
-  line-height: 1.4;
-  margin-bottom: 6px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  height: 3.2em;
+  font-size: var(--text-lg); 
+  color:#0f172a;
 }
 
-.tags-section {
-  margin-bottom: auto;
-  display: flex;
-  flex-direction: column;
+.weekGrid{
+  display:grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+}
+.day{
+  border: 1px solid rgba(16,24,40,.10);
+  border-radius: 14px;
+  overflow:hidden;
+  background:#fff;
+  min-height: 200px;
+}
+.dayTop{
+  padding: 10px 10px 8px;
+  background:#f3f6fb;
+  border-bottom: 1px solid rgba(16,24,40,.08);
+}
+/* 修正：週數與日期標準化為 14px */
+.dow{ font-weight: 700; color:#0f3a63; font-size: var(--text-sm); }
+.dnum{ margin-top: 4px; color:#111827; font-weight: 700; font-size: var(--text-base); }
+
+.dayBody{
+  padding: 10px;
+  display:flex;
+  flex-direction:column;
   gap: 8px;
 }
-.tag-group {
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-  font-size: 0.8rem;
+.empty{ color:#98a2b3; font-weight: 700; font-size: var(--text-sm); }
+
+.chip{
+  text-align:left;
+  border: 0;
+  background: #eef6ff;
+  color:#0f3a63;
+  border-radius: 10px;
+  padding: 10px 10px;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  gap: 4px;
+}
+.chip:hover{ filter: brightness(.98); }
+.chipTime{ font-size: var(--text-xs); font-weight: 700; opacity: .85; }
+.chipTitle { 
+  /* 修正：週曆活動小卡標準化為 14px */
+  font-size: var(--text-sm); 
+  font-weight: 700; 
+}
+
+.weekHint{
+  margin-top: 12px;
+  color:#98a2b3;
+  font-weight: 600;
+  /* 修正：輔助資訊維持小字 12px */
+  font-size: var(--text-xs); 
 }
 .tag-label-text {
   color: #9ca3af;

@@ -212,7 +212,8 @@ onMounted(() => {
   background: transparent;
   padding: 0.7rem 1.6rem;
   border-radius: 999px;
-  font-size: 1rem;
+  /* 修正：按鈕文字標準化為 16px */
+  font-size: var(--text-base); 
   font-weight: 700;
   color: #98a2b3;
   cursor: pointer;
@@ -236,12 +237,13 @@ onMounted(() => {
 }
 
 .tag {
-  font-size: 1rem;
+  /* 修正：標籤使用極小字規範 12px */
+  font-size: var(--text-xs); 
   font-weight: 500;
   padding: 0.45rem 1rem;
   border-radius: 0.75rem;
   text-align: center;
-  white-space: nowrap; /* 防止文字換行 */
+  white-space: nowrap;
 }
 /* 活動類：橘色系 */
 .tag.act {
@@ -255,7 +257,9 @@ onMounted(() => {
 }
 
 .title {
-  font-size: 1.5rem;
+  /* 修正：列表標題統一為 20px (H3 等級) 並優化行高 */
+  font-size: var(--text-xl); 
+  line-height: var(--leading-tight);
   font-weight: 400;
   color: #111827;
   white-space: nowrap;
@@ -266,18 +270,19 @@ onMounted(() => {
 .title:hover {
   text-decoration: underline;
 }
-
 .meta {
   text-align: right;
-  font-size: 1rem;
+  /* 修正：Meta 資訊統一為 14px */
+  font-size: var(--text-sm); 
   color: #98a2b3;
   white-space: nowrap;
 }
-
 .empty {
   padding: 3rem 0;
   text-align: center;
   color: #98a2b3;
+  /* 修正：內文標準化 16px */
+  font-size: var(--text-base);
   font-weight: 500;
 }
 
@@ -313,7 +318,8 @@ onMounted(() => {
 }
 .count {
   margin-right: auto;
-  font-size: 1rem;
+  /* 修正：分頁計數使用 14px */
+  font-size: var(--text-sm);
   color: #98a2b3;
 }
 .p {
@@ -350,9 +356,10 @@ onMounted(() => {
   .row {
     grid-template-columns: 5.6rem 1fr;
   }
-  .meta {
+.meta {
     text-align: left;
-    font-size: 0.9rem;
+    /* 修正：RWD 最小維持 14px */
+    font-size: var(--text-sm); 
     margin-top: 4px;
   }
   /* 手機版讓標題與 meta 堆疊 */

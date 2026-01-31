@@ -54,21 +54,15 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { getEvents } from "../api/event.js"; // 請確認路徑是否正確
+import { getEvents } from "../api/event.js"; 
 
 const router = useRouter();
 const newsList = ref([]);
 const loading = ref(true);
 
-// ---------------------------------------
-// 左側 Events 邏輯
-// ---------------------------------------
-
-// 1. 取得資料
 const fetchNews = async () => {
   try {
     loading.value = true;
-    // 呼叫 API: 預設抓第一頁，取 5 筆，繁體中文
     const res = await getEvents({ page: 1, size: 5, locale: "zh-TW" });
     newsList.value = res;
   } catch (error) {
@@ -78,7 +72,6 @@ const fetchNews = async () => {
   }
 };
 
-// 2. 格式化日期 (YYYY.MM.DD)
 const formatDate = (isoString) => {
   if (!isoString) return "";
   const date = new Date(isoString);
@@ -88,30 +81,21 @@ const formatDate = (isoString) => {
   return `${y}.${m}.${d}`;
 };
 
-// 3. 格式化承辦單位
 const formatOrganizer = (info) => {
-  // 後端回傳可能是 null 或 { name: null, ... }
   if (info && info.name) {
     return info.name;
   }
   return "沒有資訊";
 };
 
-// 4. 路由跳轉
 const goToNewsList = () => {
-  // 導向 /news
   router.push({ name: "news" });
 };
 
 const goToDetail = (id) => {
-  // 導向詳情頁 (未來實作詳情頁時使用)
   router.push({ name: "event-detail", params: { id } });
-  console.log(`Go to event detail: ${id}`);
 };
 
-// -----------------------------------------------
-// 右側 各單位連結
-// -----------------------------------------------
 const units = [
   "諮商輔導中心",
   "課外活動組",
@@ -129,8 +113,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 原有樣式保持不變，新增 organizer 樣式 */
-
 .row {
   display: grid;
   grid-template-columns: 1fr 320px;
@@ -154,8 +136,9 @@ onMounted(() => {
   align-items: center;
   gap: 10px;
   font-weight: 900;
-  font-size: 1.5rem;
-  line-height: 1.2;
+  /* 修正：區塊標題統一使用 24px */
+  font-size: var(--text-2xl);
+  line-height: var(--leading-tight);
 }
 .hIcon {
   width: 26px;
@@ -169,14 +152,13 @@ onMounted(() => {
   border-radius: 12px;
   overflow: hidden;
   background: #fff;
-  min-height: 200px; /* 避免沒資料時高度塌陷 */
+  min-height: 200px; 
 }
 .item {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 10px 12px;
-  border-bottom: 1px solid var(--line); /* 需確認 var(--line) 是否有定義，或改用 rgba */
   border-bottom: 1px solid rgba(16, 24, 40, 0.08);
 }
 .item:last-child {
@@ -189,7 +171,10 @@ onMounted(() => {
   min-width: 0;
 }
 .text {
-  font-size: 13px;
+  /* 重點修正：消除 13px，改為 16px 並設定行高與字重 */
+  font-size: var(--text-base);
+  line-height: 1.5;
+  font-weight: 500;
   color: #1b2430;
   white-space: nowrap;
   overflow: hidden;
@@ -202,16 +187,17 @@ onMounted(() => {
   text-decoration: underline;
 }
 
-/* 新增：承辦單位樣式 */
 .organizer {
-  color: #6b7280; /* 灰色 */
-  font-size: 0.85em;
+  color: #6b7280; 
+  /* 修正：使用極小字變數 */
+  font-size: var(--text-xs);
   margin-left: 8px;
   font-weight: normal;
 }
 
 .date {
-  font-size: 12px;
+  /* 修正：日期統一改為 14px */
+  font-size: var(--text-sm);
   color: #6b7280;
   flex: 0 0 auto;
 }
@@ -222,7 +208,6 @@ onMounted(() => {
   padding-top: 10px;
 }
 .pill-btn {
-  /* 假設這是一個全局樣式，如果沒有定義，這裡補一個簡單的 */
   border: 1px solid #ddd;
   background: white;
   border-radius: 20px;
@@ -233,7 +218,8 @@ onMounted(() => {
 }
 .small {
   padding: 8px 14px;
-  font-size: 13px;
+  /* 修正：按鈕保持標準 16px */
+  font-size: var(--text-base);
 }
 
 .linkList {
@@ -246,7 +232,8 @@ onMounted(() => {
   border-radius: 12px;
 }
 .u {
-  font-size: 13px;
+  /* 修正：連結列表標準化為 16px 確保易點擊 */
+  font-size: var(--text-base);
   padding: 6px 8px;
   border-radius: 10px;
   color: #1b2430;
@@ -260,7 +247,8 @@ onMounted(() => {
   padding: 20px;
   text-align: center;
   color: #999;
-  font-size: 13px;
+  /* 修正：載入中提示改為 16px */
+  font-size: var(--text-base);
 }
 
 @media (max-width: 980px) {
@@ -272,15 +260,15 @@ onMounted(() => {
   }
 }
 
-/* Badge & Dot 樣式補強 (如果全域沒定義) */
 .badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
+  /* 修正：標籤可維持小字 12px */
+  font-size: var(--text-xs);
   font-weight: 700;
   color: #4b5563;
-  flex-shrink: 0; /* 防止擠壓 */
+  flex-shrink: 0; 
 }
 .dot {
   width: 8px;

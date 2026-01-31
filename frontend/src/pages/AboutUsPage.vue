@@ -88,9 +88,8 @@
 import { computed, ref, onMounted } from "vue";
 import { RouterLink } from "vue-router";
 import avatarPlaceholder from "../assets/avatar_placeholder.png";
-import { fetchMembers } from "../api/member"; // ✅ 新增：member API
+import { fetchMembers } from "../api/member"; 
 
-// ✅ 這裡的 key 要跟後端回傳的 unit_key / unitKey 對得上
 const unitDefs = [
   { key: "osa", name: "學務處" },
   { key: "life", name: "生活輔導組" },
@@ -104,21 +103,16 @@ const unitDefs = [
 ];
 
 const activeUnitKey = ref("osa");
-
-// ✅ API 狀態
 const loading = ref(false);
 const errorMsg = ref("");
 const members = ref([]);
 
-// ✅ 取得資料
 async function loadMembers() {
   loading.value = true;
   errorMsg.value = "";
   try {
     const res = await fetchMembers({ locale: "zh-TW", page: 1, size: 200 });
     const data = res?.data;
-
-    // 兼容：array / {items} / {data:{items}}
     const items = data?.items ?? data?.data?.items ?? data?.data ?? data ?? [];
     members.value = Array.isArray(items) ? items : [];
   } catch (e) {
@@ -132,17 +126,15 @@ async function loadMembers() {
 
 onMounted(loadMembers);
 
-// ✅ 將 members 依 unitKey 分組（這裡假設後端給 unit_key 或 unitKey）
 const membersByUnit = computed(() => {
   const map = {};
   for (const m of members.value) {
-    const key = m.unit_key ?? m.unitKey ?? "osa"; // 沒有就先丟 osa（避免爆）
+    const key = m.unit_key ?? m.unitKey ?? "osa"; 
     (map[key] ||= []).push(m);
   }
   return map;
 });
 
-// ✅ units 用「def + count」組合，count 用資料算
 const units = computed(() =>
   unitDefs.map((u) => ({
     ...u,
@@ -156,15 +148,12 @@ const activeUnit = computed(
 
 const activePeople = computed(() => membersByUnit.value[activeUnitKey.value] || []);
 
-// ✅ 頭像：如果後端有 avatar_url 就用，沒有就用 placeholder
 function getAvatarUrl(p) {
   return p.avatar_url || p.avatarUrl || avatarPlaceholder;
 }
 </script>
 
 <style scoped>
-
-
 .page {
   padding: 1.7rem 0 3.6rem;
 }
@@ -188,7 +177,8 @@ function getAvatarUrl(p) {
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  font-size: 1.5rem; 
+  /* 修正：側欄標題統一為 20px */
+  font-size: var(--text-xl); 
   font-weight: 700;
   color: #111827;
   margin-bottom: 1rem;
@@ -216,8 +206,8 @@ function getAvatarUrl(p) {
   padding: 0.7rem 1rem;
   border-radius: 999px;
   cursor: pointer;
-
-  font-size: 1rem; 
+  /* 修正：側欄選單標準化 16px */
+  font-size: var(--text-base); 
   font-weight: 400;
   color: #111827;
   text-align: left;
@@ -234,7 +224,7 @@ function getAvatarUrl(p) {
 
 .sideBtn .txt {
   letter-spacing: 0.02em;
-  line-height: 1.4;
+  line-height: var(--leading-tight);
 }
 
 .content {
@@ -249,7 +239,8 @@ function getAvatarUrl(p) {
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  font-size: 0.86rem; 
+  /* 修正：Meta 資訊標準 14px */
+  font-size: var(--text-sm); 
   color: #6b7280;
   margin-bottom: 0.6rem;
 }
@@ -267,26 +258,33 @@ function getAvatarUrl(p) {
   color: #6b7280;
 }
 
-.h1,
+.h1 {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  /* 修正：H1 頁面標題 30px */
+  font-size: var(--text-3xl); 
+  font-weight: 700;
+  color: #111827;
+  margin: 0.75rem 0 0.75rem;
+  line-height: var(--leading-tight);
+}
+
 .h2 {
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  font-size: 1.5rem; 
+  /* 修正：H2 區塊標題 24px */
+  font-size: var(--text-2xl); 
   font-weight: 700;
   color: #111827;
-}
-
-.h1 {
-  margin: 0.75rem 0 0.75rem;
-}
-
-.h2 {
   margin: 1.3rem 0 0.9rem;
+  line-height: var(--leading-tight);
 }
 
 .h2Count {
-  font-size: 0.95rem;
+  /* 修正：輔助資訊標準 14px */
+  font-size: var(--text-sm);
   color: #64748b;
   font-weight: 400;
 }
@@ -299,9 +297,10 @@ function getAvatarUrl(p) {
 }
 
 .desc {
-  font-size: 1rem; 
+  /* 修正：內文標準 16px 與行高 1.6 */
+  font-size: var(--text-base); 
+  line-height: var(--leading-normal);
   color: #334155;
-  line-height: 1.8;
 }
 
 .staffList {
@@ -342,10 +341,12 @@ function getAvatarUrl(p) {
 }
 
 .nameLine {
-  font-size: 1.5rem; 
+  /* 修正：卡片標題使用 20px */
+  font-size: var(--text-xl); 
   font-weight: 700;
   color: #111827;
   margin-bottom: 0.75rem;
+  line-height: var(--leading-tight);
 }
 
 .kv {
@@ -363,14 +364,16 @@ function getAvatarUrl(p) {
 }
 
 .label {
-  font-size: 1rem;
+  /* 修正：欄位標籤 16px */
+  font-size: var(--text-base);
   color: #0f172a;
 }
 
 .val {
-  font-size: 1rem;
+  /* 修正：欄位內容 16px 與行高 1.6 */
+  font-size: var(--text-base);
   color: #111827;
-  line-height: 1.7;
+  line-height: var(--leading-normal);
 }
 
 .val.link {
@@ -378,17 +381,19 @@ function getAvatarUrl(p) {
 }
 
 .duty {
-  font-size: 1rem; 
+  /* 修正：內文標準化 16px */
+  font-size: var(--text-base); 
   color: #111827;
   margin-top: 0.65rem;
-  line-height: 1.8;
+  line-height: var(--leading-normal);
 }
 
 .extra {
-  font-size: 1rem; 
+  /* 修正：內文標準化 16px */
+  font-size: var(--text-base); 
   margin-top: 0.5rem;
   color: #334155;
-  line-height: 1.8;
+  line-height: var(--leading-normal);
 }
 
 /* RWD */
@@ -406,11 +411,15 @@ function getAvatarUrl(p) {
     width: 10rem;
     height: 10rem;
   }
+  .h1 { font-size: var(--text-2xl); } /* 手機版降級為 24px */
 }
+
 .state {
   padding: 16px;
   border-radius: 12px;
   background: rgba(0,0,0,.04);
+  /* 修正：狀態提示 16px */
+  font-size: var(--text-base);
   color: #334155;
 }
 .state--error {

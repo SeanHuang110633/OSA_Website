@@ -1,6 +1,5 @@
 <template>
   <header class="header">
-    <!-- 中間：Logo + 標題 + 搜尋 -->
     <div class="mid">
       <div class="container midInner">
         <div class="brand">
@@ -18,14 +17,12 @@
       </div>
     </div>
 
-    <!-- 下方：導覽列 -->
     <div class="navStrip">
       <div class="container navInner">
         <nav class="menu" aria-label="主選單">
           <RouterLink class="item" to="/about">關於本處</RouterLink>
           <span class="vline"></span>
 
-          <!-- ✅ 各單位連結：點擊開關（不閃退） -->
           <div class="dd" ref="ddRef">
             <button
               class="item has"
@@ -133,23 +130,16 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 import school from "../assets/school.png";
 
-/* 下拉開關 */
 const open = ref(false);
 const ddRef = ref(null);
 
-function toggle() {
-  open.value = !open.value;
-}
-function close() {
-  open.value = false;
-}
+function toggle() { open.value = !open.value; }
+function close() { open.value = false; }
 
-/* ✅ 點外面關閉 + ESC 關閉（避免閃退、也不會一直黏住） */
 function onDocPointerDown(e) {
   if (!open.value) return;
   const el = ddRef.value;
-  if (!el) return;
-  if (!el.contains(e.target)) close();
+  if (!el || !el.contains(e.target)) close();
 }
 function onDocKeyDown(e) {
   if (e.key === "Escape") close();
@@ -164,7 +154,6 @@ onBeforeUnmount(() => {
   document.removeEventListener("keydown", onDocKeyDown);
 });
 
-/* 各處室連結（先保底；你之後換成每個單位的正式網址） */
 const links = {
   life: "https://www.ncu.edu.tw/tw/unit?id=student_affairs",
   consult: "https://www.ncu.edu.tw/tw/unit?id=student_affairs",
@@ -182,8 +171,7 @@ const links = {
   background: #fff;
 }
 
-/* 中間那塊淺藍背景 */
-.mid {
+.mid{
   background: #eaf4ff;
   border-bottom: 1px solid rgba(21, 58, 99, 0.22);
 }
@@ -195,56 +183,46 @@ const links = {
   gap: 16px;
 }
 
-/* Logo / 標題 */
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.logo {
-  height: 44px;
-  width: auto;
-}
-.brandText .zh {
+.brand{ display:flex; align-items:center; gap: 14px; }
+.logo{ height: 44px; width: auto; }
+.brandText .zh{
   font-weight: 900;
-  font-size: 22px;
-  letter-spacing: 0.5px;
-  line-height: 1.1;
+  /* 修正：單位名稱標題統一為 24px */
+  font-size: var(--text-2xl);
+  letter-spacing: .5px;
+  line-height: var(--leading-tight);
 }
 .brandText .en {
   margin-top: 4px;
-  font-size: 16px;
-  color: #1f2f3d;
-  letter-spacing: 0.3px;
+  /* 修正：副標題標準化為 16px */
+  font-size: var(--text-base);
+  color:#1f2f3d;
+  letter-spacing: .3px;
 }
 
-/* 搜尋 */
-.search {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.input {
+.search{ display:flex; align-items:center; gap:10px; }
+.input{
   width: 320px;
   height: 44px;
   border-radius: 999px;
   border: 1px solid rgba(16, 24, 40, 0.18);
   padding: 0 18px;
-  background: #fff;
-  font-size: 16px;
+  background:#fff;
+  /* 修正：輸入框文字標準化 16px */
+  font-size: var(--text-base);
 }
 .btn {
   width: 44px;
   height: 44px;
   border-radius: 999px;
-  border: 1px solid rgba(16, 24, 40, 0.18);
-  background: #fff;
-  cursor: pointer;
-  font-size: 18px;
+  border: 1px solid rgba(16,24,40,.18);
+  background:#fff;
+  cursor:pointer;
+  /* 修正：圖示按鈕文字標準化 18px */
+  font-size: var(--text-lg);
 }
 
-/* 導覽列 */
-.navStrip {
+.navStrip{
   background: #eaf4ff;
   border-bottom: 1px solid rgba(21, 58, 99, 0.18);
 }
@@ -263,8 +241,9 @@ const links = {
 }
 .item {
   font-weight: 900;
-  font-size: 18px;
-  color: #111827;
+  /* 修正：主要導覽列文字統一為 18px (lg) */
+  font-size: var(--text-lg);
+  color:#111827;
   white-space: nowrap;
   text-decoration: none;
 }
@@ -278,15 +257,8 @@ const links = {
   background: rgba(16, 24, 40, 0.2);
 }
 
-/* ===== 下拉：容器 ===== */
-.dd {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-/* ✅ 移除醜框框：button 跟一般 nav item 一致 */
-.item.has {
+.dd{ position: relative; display:flex; align-items:center; }
+.item.has{
   background: transparent !important;
   border: 0 !important;
   border-radius: 0 !important;
@@ -299,9 +271,9 @@ const links = {
   text-decoration: underline;
 }
 
-/* caret */
-.caret {
-  font-size: 12px;
+.caret{
+  /* 修正：小圖示使用極小字 12px */
+  font-size: var(--text-xs);
   margin-left: 6px;
   position: relative;
   top: -1px;
@@ -311,8 +283,7 @@ const links = {
   transform: rotate(180deg);
 }
 
-/* ===== 下拉選單（小一點寬度 + 水藍色） ===== */
-.ddMenu {
+.ddMenu{
   position: absolute;
   top: 44px;
   left: 50%;
@@ -330,11 +301,12 @@ const links = {
   display: block;
   text-align: center;
   padding: 10px 12px;
-  font-size: 16px;
+  /* 修正：下拉選單項目標準化 16px */
+  font-size: var(--text-base);
   font-weight: 700;
   color: #0f3a63;
   text-decoration: none;
-  line-height: 1.4;
+  line-height: var(--leading-tight);
 }
 .ddItem + .ddItem {
   border-top: 1px solid rgba(15, 58, 99, 0.18);
@@ -344,22 +316,14 @@ const links = {
 }
 
 /* RWD */
-@media (max-width: 980px) {
-  .input {
-    width: 220px;
-  }
-  .brandText .zh {
-    font-size: 18px;
-  }
-  .brandText .en {
-    font-size: 13px;
-  }
-  .item {
-    font-size: 15px;
-  }
-  .menu {
-    gap: 12px;
-    overflow-x: auto;
-  }
+@media (max-width: 980px){
+  .input{ width: 220px; }
+  /* 修正：手機版標題降級為 18px */
+  .brandText .zh{ font-size: var(--text-lg); }
+  /* 修正：手機版輔助文字 14px */
+  .brandText .en{ font-size: var(--text-sm); }
+  /* 修正：手機版選單維持 16px */
+  .item{ font-size: var(--text-base); }
+  .menu{ gap: 12px; overflow-x:auto; }
 }
 </style>
