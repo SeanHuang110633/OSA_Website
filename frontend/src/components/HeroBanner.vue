@@ -122,7 +122,7 @@ onBeforeUnmount(() => {
   overflow: hidden;
   background: #fff;
   box-shadow: 0 16px 38px rgba(16,24,40,.10);
-  border: 1px solid rgba(16,24,40,.08);
+  border: 1px solid rgba(117, 53, 174, 0.296);
 }
 
 .track{
@@ -152,7 +152,7 @@ onBeforeUnmount(() => {
 }
 
 .right{
-  background: #0f2f45;
+  background: #706baa;
   color: #fff;
   padding: 2.4rem 2.6rem;
   display: flex;
@@ -164,7 +164,7 @@ onBeforeUnmount(() => {
   /* 修正：大幅提升標題氣勢 (36px) 並套用緊湊行高 (1.3) */
   font-size: var(--text-4xl);
   font-weight: 700;
-  color: #f2cf57;
+  color: #ffd445;
   line-height: var(--leading-tight);
 }
 .desc{
