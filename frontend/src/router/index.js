@@ -1,7 +1,9 @@
+
 import { createRouter, createWebHistory } from "vue-router";
 import HomePage from "../pages/HomePage.vue";
 import NewsListPage from "../pages/NewsListPage.vue";
 import ServiceResourcesPage from "../pages/ServiceResourcesPage.vue";
+// import Downloads from "../pages/Downloads.vue"; 先改成下面這個
 import DownloadPage from "../pages/DownloadPage.vue";
 import AboutUsPage from "../pages/AboutUsPage.vue";
 import EventDetailPage from "../pages/EventDetailPage.vue";
