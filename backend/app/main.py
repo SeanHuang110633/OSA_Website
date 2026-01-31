@@ -9,6 +9,7 @@ from app.routers import event_router  # 8. 引入「活動消息模組」的 API
 from app.routers import activity_router  # 引入「下載資源模組」的 API Router
 from app.routers import download_router  # 引入「下載資源模組」的 API Router
 from app.routers import member_router     # 引入「成員模組」的 API Router
+from app.routers import activity_router  # 引入「下載資源模組」的 API Router
 
 
 # =========================================================
@@ -72,6 +73,11 @@ app.include_router(event_router.router, prefix="/api")
 app.include_router(download_router.router, prefix="/api")
 app.include_router(activity_router.router, prefix="/api")
 app.include_router(member_router.router, prefix="/api")  # 成員 API
+
+
+app.include_router(activity_router.router, prefix="/api")
+
+
 # =========================================================
 # 程式進入點
 # =========================================================

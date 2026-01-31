@@ -5,9 +5,26 @@
         <div class="title">
           <span class="bar" aria-hidden="true"></span>
           <span class="t">活動列表</span>
+          <span class="t">活動列表</span>
         </div>
 
         <div class="modes" role="tablist" aria-label="顯示模式">
+          <button
+            class="mode"
+            :class="{ on: mode === 'card' }"
+            type="button"
+            @click="mode = 'card'"
+          >
+            卡片模式
+          </button>
+          <button
+            class="mode"
+            :class="{ on: mode === 'list' }"
+            type="button"
+            @click="mode = 'list'"
+          >
+            列表模式
+          </button>
           <button
             class="mode"
             :class="{ on: mode === 'card' }"
@@ -33,7 +50,40 @@
         <button class="nav prev" aria-label="上一張" @click="slidePrev">
           ‹
         </button>
+      <div v-if="loading" class="loading-state">資料讀取中...</div>
 
+      <div v-else-if="mode === 'card'" class="body slider-body">
+        <button class="nav prev" aria-label="上一張" @click="slidePrev">
+          ‹
+        </button>
+
+        <div class="slider-viewport">
+          <div
+            class="track"
+            :style="{
+              transform: `translateX(-${sliderTranslateX}%)`,
+              transition: isResetting ? 'none' : 'transform 0.4s ease-in-out',
+            }"
+            @transitionend="handleTransitionEnd"
+          >
+            <article
+              v-for="(e, index) in displayEvents"
+              :key="`${e.id}-${index}`"
+              class="card-wrapper"
+            >
+              <div class="card">
+                <div class="thumb-img">
+                  <img
+                    :src="getImageUrl(e.local_img_path)"
+                    :alt="e.title"
+                    @error="handleImageError"
+                  />
+                  <span
+                    class="status-badge"
+                    :class="getStatusClass(e.status)"
+                    >{{ e.status }}</span
+                  >
+                </div>
         <div class="slider-viewport">
           <div
             class="track"
@@ -116,17 +166,79 @@
               </div>
             </article>
           </div>
+                <div class="content">
+                  <div class="meta-row">
+                    <span class="meta-item" title="瀏覽次數">
+                      <span class="icon">👁</span>
+                      <span class="label">瀏覽:</span>
+                      <span class="val">{{ e.views }}</span>
+                    </span>
+                    <span class="meta-divider">|</span>
+                    <span class="meta-item" title="報名人數">
+                      <span class="icon">👤</span>
+                      <span class="label">報名:</span>
+                      <span class="val">{{ e.joined }}</span>
+                    </span>
+                  </div>
+
+                  <div class="date">{{ formatDateShort(e.created_at) }}</div>
+                  <div class="name" :title="e.title">{{ e.title }}</div>
+
+                  <div class="tags-section">
+                    <div v-if="e.target_audience.length" class="tag-group">
+                      <span class="tag-label-text">對象:</span>
+                      <div class="tag-list">
+                        <span
+                          v-for="tag in e.target_audience"
+                          :key="tag"
+                          class="tag target"
+                          >{{ tag }}</span
+                        >
+                      </div>
+                    </div>
+                    <div v-if="e.sdg_labels.length" class="tag-group">
+                      <span class="tag-label-text">SDGs:</span>
+                      <div class="tag-list">
+                        <span
+                          v-for="tag in e.sdg_labels"
+                          :key="tag"
+                          class="tag sdg"
+                          >{{ tag }}</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+
+                  <a
+                    :href="e.link"
+                    target="_blank"
+                    class="more"
+                    rel="noopener noreferrer"
+                    >查看詳情</a
+                  >
+                </div>
+              </div>
+            </article>
+          </div>
         </div>
 
+        <button class="nav next" aria-label="下一張" @click="slideNext">
+          ›
+        </button>
         <button class="nav next" aria-label="下一張" @click="slideNext">
           ›
         </button>
       </div>
 
       <div v-else-if="mode === 'list'" class="listWrap">
+      <div v-else-if="mode === 'list'" class="listWrap">
         <div class="list">
           <div v-for="e in events" :key="e.id" class="row">
             <div class="rDate">
+              <div class="d1">{{ formatDateShort(e.created_at) }}</div>
+              <div class="status-pill" :class="getStatusClass(e.status)">
+                {{ e.status }}
+              </div>
               <div class="d1">{{ formatDateShort(e.created_at) }}</div>
               <div class="status-pill" :class="getStatusClass(e.status)">
                 {{ e.status }}
@@ -164,9 +276,40 @@
                 <span class="r-divider">/</span>
                 <span class="meta-mini">報名: {{ e.joined }}</span>
               </div>
+              <div class="rTitle">
+                <a :href="e.link" target="_blank">{{ e.title }}</a>
+              </div>
+              <div class="rMeta">
+                <div class="r-tags" v-if="e.target_audience.length">
+                  <span class="r-label">對象:</span>
+                  <span
+                    class="tag target mini"
+                    v-for="t in e.target_audience"
+                    :key="t"
+                    >{{ t }}</span
+                  >
+                </div>
+
+                <div class="r-tags" v-if="e.sdg_labels.length">
+                  <span class="r-divider">/</span>
+                  <span class="r-label">SDGs:</span>
+                  <span
+                    class="tag sdg mini"
+                    v-for="s in e.sdg_labels"
+                    :key="s"
+                    >{{ s }}</span
+                  >
+                </div>
+
+                <span class="r-divider">/</span>
+                <span class="meta-mini">瀏覽: {{ e.views }}</span>
+                <span class="r-divider">/</span>
+                <span class="meta-mini">報名: {{ e.joined }}</span>
+              </div>
             </div>
 
             <div class="rAct">
+              <a :href="e.link" target="_blank" class="more small">查看詳情</a>
               <a :href="e.link" target="_blank" class="more small">查看詳情</a>
             </div>
           </div>
@@ -177,6 +320,8 @@
 </template>
 
 <script setup>
+import { computed, ref, onMounted, watch } from "vue";
+import { getActivities } from "../api/activity";
 import { computed, ref, onMounted, watch } from "vue";
 import { getActivities } from "../api/activity";
 
@@ -205,6 +350,7 @@ function updateItemsPerView() {
 onMounted(async () => {
   updateItemsPerView();
   window.addEventListener("resize", updateItemsPerView);
+
   loading.value = true;
   try {
     const data = await getActivities();
@@ -318,6 +464,8 @@ function formatDateShort(dateStr) {
 <style scoped>
 /* ================= 全局容器 ================= */
 #weekly-events {
+/* ================= 全局容器 ================= */
+#weekly-events {
   scroll-margin-top: 90px;
 }
 .eventWrap {
@@ -325,7 +473,14 @@ function formatDateShort(dateStr) {
 }
 .eventCard {
   background: #fff;
+.eventWrap {
+  margin-top: 18px;
+}
+.eventCard {
+  background: #fff;
   border-radius: 26px;
+  box-shadow: 0 10px 28px rgba(16, 24, 40, 0.1);
+  border: 1px solid rgba(16, 24, 40, 0.08);
   box-shadow: 0 10px 28px rgba(16, 24, 40, 0.1);
   border: 1px solid rgba(16, 24, 40, 0.08);
   padding: 34px 34px 28px;
@@ -336,23 +491,40 @@ function formatDateShort(dateStr) {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
+/* ================= 標題區 ================= */
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: 16px;
   margin-bottom: 26px;
 }
-
-.title{ display:flex; align-items:center; gap: 14px; }
-.bar{ width: 10px; height: 32px; background:#f2cf57; border-radius:2px; }
-
+.title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.bar {
+  width: 10px;
+  height: 32px;
+  background: #f2cf57;
+  border-radius: 2px;
+}
 .t {
-  /* 修正：區塊標題統一使用 24px */
-  font-size: var(--text-2xl); 
+  font-size: 1.5rem;
   font-weight: 700;
+  color: #0f172a;
+  letter-spacing: 0.2px;
   color: #0f172a;
   letter-spacing: 0.2px;
 }
 
 
-.modes{ display:flex; align-items:center; gap: 10px; }
+.modes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 .mode {
   height: 42px;
   padding: 0 18px;
@@ -360,10 +532,12 @@ function formatDateShort(dateStr) {
   border: 1px solid rgba(16, 24, 40, 0.18);
   background: #fff;
   color: #6b7280;
+  border: 1px solid rgba(16, 24, 40, 0.18);
+  background: #fff;
+  color: #6b7280;
   font-weight: 700;
-  /* 修正：切換按鈕標準化為 16px */
-  font-size: var(--text-base); 
-  cursor:pointer;
+  font-size: 0.95rem;
+  cursor: pointer;
 }
 .mode.on {
   background: #0f3a63;
@@ -382,9 +556,39 @@ function formatDateShort(dateStr) {
   font-weight: 600;
 }
 
+/* ================= 輪播 (Slider) 核心樣式 ================= */
+.slider-body {
+  overflow: hidden; /* 隱藏超出的部分 */
+}
 
-.nav{
-  position:absolute;
+.slider-viewport {
+  overflow: hidden;
+  width: 100%;
+  /* 為了讓陰影不被裁切，上下留點空間 (視需要調整) */
+  padding: 10px 0 20px 0;
+  margin: -10px 0 -20px 0;
+}
+
+/* 軌道：Flex 排列，透過 JS 控制 transform */
+.track {
+  display: flex;
+  width: 100%;
+  will-change: transform; /* 效能優化 */
+}
+
+/* 卡片外層容器：負責寬度與間距 */
+.card-wrapper {
+  /* 預設桌面版：顯示 4 個 => 25% */
+  flex: 0 0 25%;
+  max-width: 25%;
+  /* 使用 padding 來製造卡片間的 gap，這樣算 % 比較準 */
+  padding: 0 11px;
+  box-sizing: border-box;
+}
+
+/* 導航按鈕 */
+.nav {
+  position: absolute;
   top: 50%;
   transform: translateY(-50%);
   width: 44px;
@@ -392,39 +596,29 @@ function formatDateShort(dateStr) {
   background: transparent;
   box-shadow: none;
   border: 0;
-
-  border-radius: 0;
-  cursor:pointer;
-  display:grid;
-  place-items:center;
-  font-size: 40px;
-  line-height: 1;
-  color: rgba(15,23,42,.55);     
-  z-index: 5;
-  padding: 10px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(16, 24, 40, 0.14);
+  cursor: pointer;
+  font-size: 34px;
+  color: #0f172a;
+  display: grid;
+  place-items: center;
+  z-index: 2;
+  transition: filter 0.2s;
+}
+.nav:hover {
+  filter: brightness(0.95);
+}
+.prev {
+  left: -6px;
+}
+.next {
+  right: -6px;
 }
 
-.prev{ left: -22px; }
-.next{ right: -22px; }
-
-.nav:hover{ color: rgba(15,23,42,.85); }
-.nav:active{ transform: translateY(-50%) scale(.96); }
-
-.nav:focus-visible{
-  outline: 2px solid rgba(59,130,246,.55);
-  outline-offset: 4px;
-}
-.prev{ left: -6px; }
-.next{ right: -6px; }
-
-.track{
-  display:grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 22px;
-  align-items: stretch;
-}
-.card{
-  background:#fff;
+/* ================= 卡片本體樣式 ================= */
+.card {
+  background: #fff;
   border-radius: 18px;
   border: 1px solid rgba(16, 24, 40, 0.1);
   box-shadow: 0 8px 18px rgba(16, 24, 40, 0.06);
@@ -452,10 +646,13 @@ function formatDateShort(dateStr) {
   object-fit: cover;
 }
 
-
-.date {
-  /* 修正：輔助資訊標準化為 14px */
-  font-size: var(--text-sm); 
+.status-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
   font-weight: 700;
   color: #fff;
   background: rgba(0, 0, 0, 0.6);
@@ -463,158 +660,72 @@ function formatDateShort(dateStr) {
   z-index: 1;
 }
 
-.name {
-  /* 修正：卡片標題使用 20px */
-  font-size: var(--text-xl); 
-  font-weight: 700;
-  color:#111827;
-  line-height: var(--leading-tight); /* 1.3 */
-}
-.desc {
-  color:#6b7280;
-  /* 修正：內文標準化為 16px 並設定行高 1.6 */
-  font-size: var(--text-base); 
-  line-height: var(--leading-normal); 
+.content {
+  padding: 16px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   flex: 1;
 }
 
-.more {
-  align-self:flex-start;
-  margin-top: 4px;
-  width: 140px;
-  height: 42px;
-  border-radius: 999px;
-  border: 0;
-  background:#f2cf57;
-  color:#111827;
-  font-weight: 700;
-  /* 修正：按鈕標準化為 16px */
-  font-size: var(--text-base); 
-  cursor:pointer;
+.meta-row {
+  display: flex;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #6b7280;
+  background: #f8fafc;
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin-bottom: 4px;
 }
-.more:hover{ filter: brightness(.97); }
-.more.small{ width: 128px; height: 40px; font-size: var(--text-base); }
-
-.listWrap{ padding: 0 6px; }
-.list{
-  border: 1px solid rgba(16,24,40,.10);
-  border-radius: 16px;
-  overflow:hidden;
-}
-.row{
-  display:grid;
-  grid-template-columns: 220px 1fr 160px;
-  gap: 16px;
-  align-items:center;
-  padding: 14px 16px;
-  border-bottom: 1px solid rgba(16,24,40,.10);
-  background:#fff;
-}
-.row:last-child{ border-bottom:0; }
-
-/* 修正：列表日期使用 14px */
-.rDate .d1{ font-size: var(--text-sm); font-weight: 700; color:#0f3a63; }
-.rDate .d2 { 
-  margin-top: 6px; 
-  font-size: var(--text-xs); /* 12px */
-  color:#6b7280; 
-  font-weight: 600; 
-}
-
-/* 修正：列表標題使用 20px */
-.rTitle { 
-  font-size: var(--text-xl); 
-  font-weight: 700; 
-  color:#111827; 
-}
-/* 修正：列表描述使用 16px 並設定行高 1.6 */
-.rDesc { 
-  margin-top: 6px; 
-  font-size: var(--text-base); 
-  color:#6b7280; 
-  line-height: var(--leading-normal); 
-}
-
-.rAct{ display:flex; justify-content:flex-end; }
-
-.weekWrap{ padding: 0 6px; }
-.weekHead{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap: 14px;
-  margin: 6px 0 14px;
-}
-.wkBtn{
-  width: 42px; height: 42px;
-  border-radius: 999px;
-  border: 1px solid rgba(16,24,40,.16);
-  background:#fff;
-  cursor:pointer;
-  font-size: 22px;
-}
-/* 修正：週曆標題標準化為 18px (lg) */
-.wkTitle {
-  font-weight: 700;
-  font-size: var(--text-lg); 
-  color:#0f172a;
-}
-
-.weekGrid{
-  display:grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 12px;
-}
-.day{
-  border: 1px solid rgba(16,24,40,.10);
-  border-radius: 14px;
-  overflow:hidden;
-  background:#fff;
-  min-height: 200px;
-}
-.dayTop{
-  padding: 10px 10px 8px;
-  background:#f3f6fb;
-  border-bottom: 1px solid rgba(16,24,40,.08);
-}
-/* 修正：週數與日期標準化為 14px */
-.dow{ font-weight: 700; color:#0f3a63; font-size: var(--text-sm); }
-.dnum{ margin-top: 4px; color:#111827; font-weight: 700; font-size: var(--text-base); }
-
-.dayBody{
-  padding: 10px;
-  display:flex;
-  flex-direction:column;
-  gap: 8px;
-}
-.empty{ color:#98a2b3; font-weight: 700; font-size: var(--text-sm); }
-
-.chip{
-  text-align:left;
-  border: 0;
-  background: #eef6ff;
-  color:#0f3a63;
-  border-radius: 10px;
-  padding: 10px 10px;
-  cursor:pointer;
-  display:flex;
-  flex-direction:column;
+.meta-item {
+  display: flex;
+  align-items: center;
   gap: 4px;
 }
-.chip:hover{ filter: brightness(.98); }
-.chipTime{ font-size: var(--text-xs); font-weight: 700; opacity: .85; }
-.chipTitle { 
-  /* 修正：週曆活動小卡標準化為 14px */
-  font-size: var(--text-sm); 
-  font-weight: 700; 
+.meta-item .label {
+  font-weight: 500;
+}
+.meta-item .val {
+  font-weight: 700;
+  color: #0f3a63;
+}
+.meta-divider {
+  margin: 0 8px;
+  color: #cbd5e1;
 }
 
-.weekHint{
-  margin-top: 12px;
-  color:#98a2b3;
-  font-weight: 600;
-  /* 修正：輔助資訊維持小字 12px */
-  font-size: var(--text-xs); 
+.date {
+  font-size: 0.9rem;
+  color: #3b82f6;
+  font-weight: 700;
+}
+
+
+.name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.4;
+  margin-bottom: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  height: 3.2em;
+}
+
+.tags-section {
+  margin-bottom: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tag-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 0.8rem;
 }
 .tag-label-text {
   color: #9ca3af;
@@ -815,3 +926,4 @@ function formatDateShort(dateStr) {
   }
 }
 </style>
+
