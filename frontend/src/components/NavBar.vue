@@ -37,15 +37,68 @@
               各單位連結 <span class="caret" :class="{ up: open }">▼</span>
             </button>
 
-            <div v-show="open" class="ddMenu" role="menu" aria-label="各單位連結">
-              <a class="ddItem" :href="links.life" target="_blank" rel="noreferrer">生活輔導組</a>
-              <a class="ddItem" :href="links.consult" target="_blank" rel="noreferrer">諮商輔導中心</a>
-              <a class="ddItem" :href="links.activity" target="_blank" rel="noreferrer">課外活動組</a>
-              <a class="ddItem" :href="links.service" target="_blank" rel="noreferrer">服務學習發展中心</a>
-              <a class="ddItem" :href="links.dorm" target="_blank" rel="noreferrer">住宿服務組</a>
-              <a class="ddItem" :href="links.health" target="_blank" rel="noreferrer">衛生保健組</a>
-              <a class="ddItem" :href="links.career" target="_blank" rel="noreferrer">職涯發展中心</a>
-              <a class="ddItem" :href="links.indigenous" target="_blank" rel="noreferrer">原住民族學生資源中心</a>
+            <div
+              v-show="open"
+              class="ddMenu"
+              role="menu"
+              aria-label="各單位連結"
+            >
+              <a
+                class="ddItem"
+                :href="links.life"
+                target="_blank"
+                rel="noreferrer"
+                >生活輔導組</a
+              >
+              <a
+                class="ddItem"
+                :href="links.consult"
+                target="_blank"
+                rel="noreferrer"
+                >諮商輔導中心</a
+              >
+              <a
+                class="ddItem"
+                :href="links.activity"
+                target="_blank"
+                rel="noreferrer"
+                >課外活動組</a
+              >
+              <a
+                class="ddItem"
+                :href="links.service"
+                target="_blank"
+                rel="noreferrer"
+                >服務學習發展中心</a
+              >
+              <a
+                class="ddItem"
+                :href="links.dorm"
+                target="_blank"
+                rel="noreferrer"
+                >住宿服務組</a
+              >
+              <a
+                class="ddItem"
+                :href="links.health"
+                target="_blank"
+                rel="noreferrer"
+                >衛生保健組</a
+              >
+              <a
+                class="ddItem"
+                :href="links.career"
+                target="_blank"
+                rel="noreferrer"
+                >職涯發展中心</a
+              >
+              <a
+                class="ddItem"
+                :href="links.indigenous"
+                target="_blank"
+                rel="noreferrer"
+                >原住民族學生資源中心</a
+              >
             </div>
           </div>
 
@@ -54,15 +107,21 @@
           <span class="vline"></span>
           <RouterLink class="item" to="/resources">服務資源</RouterLink>
           <span class="vline"></span>
-          <a class="item" href="#">募款專區</a>
+          <RouterLink class="item" to="/donate">募款專區</RouterLink>
           <span class="vline"></span>
           <RouterLink class="item" to="/downloads">下載專區</RouterLink>
           <span class="vline"></span>
-          <RouterLink class="item" :to="{ path: '/', hash: '#weekly-events' }">本週活動</RouterLink>
+          <RouterLink class="item" :to="{ path: '/', hash: '#weekly-events' }"
+            >本週活動</RouterLink
+          >
           <span class="vline"></span>
-          <RouterLink class="item" :to="{ path: '/', hash: '#quick-links' }">快速連結</RouterLink>
+          <RouterLink class="item" :to="{ path: '/', hash: '#quick-links' }"
+            >快速連結</RouterLink
+          >
           <span class="vline"></span>
-          <RouterLink class="item" :to="{ path: '/', hash: '#location-map' }">位置資訊</RouterLink>
+          <RouterLink class="item" :to="{ path: '/', hash: '#location-map' }"
+            >位置資訊</RouterLink
+          >
         </nav>
       </div>
     </div>
@@ -119,96 +178,115 @@ const links = {
 </script>
 
 <style scoped>
-.header{ background:#fff; }
+.header {
+  background: #fff;
+}
 
 /* 中間那塊淺藍背景 */
-.mid{
+.mid {
   background: #eaf4ff;
-  border-bottom: 1px solid rgba(21,58,99,.22);
+  border-bottom: 1px solid rgba(21, 58, 99, 0.22);
 }
-.midInner{
+.midInner {
   height: 92px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 16px;
 }
 
 /* Logo / 標題 */
-.brand{ display:flex; align-items:center; gap: 14px; }
-.logo{ height: 44px; width: auto; }
-.brandText .zh{
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.logo {
+  height: 44px;
+  width: auto;
+}
+.brandText .zh {
   font-weight: 900;
   font-size: 22px;
-  letter-spacing: .5px;
+  letter-spacing: 0.5px;
   line-height: 1.1;
 }
-.brandText .en{
+.brandText .en {
   margin-top: 4px;
   font-size: 16px;
-  color:#1f2f3d;
-  letter-spacing: .3px;
+  color: #1f2f3d;
+  letter-spacing: 0.3px;
 }
 
 /* 搜尋 */
-.search{ display:flex; align-items:center; gap:10px; }
-.input{
+.search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.input {
   width: 320px;
   height: 44px;
   border-radius: 999px;
-  border: 1px solid rgba(16,24,40,.18);
+  border: 1px solid rgba(16, 24, 40, 0.18);
   padding: 0 18px;
-  background:#fff;
+  background: #fff;
   font-size: 16px;
 }
-.btn{
+.btn {
   width: 44px;
   height: 44px;
   border-radius: 999px;
-  border: 1px solid rgba(16,24,40,.18);
-  background:#fff;
-  cursor:pointer;
+  border: 1px solid rgba(16, 24, 40, 0.18);
+  background: #fff;
+  cursor: pointer;
   font-size: 18px;
 }
 
 /* 導覽列 */
-.navStrip{
+.navStrip {
   background: #eaf4ff;
-  border-bottom: 1px solid rgba(21,58,99,.18);
+  border-bottom: 1px solid rgba(21, 58, 99, 0.18);
 }
-.navInner{
+.navInner {
   height: 56px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.menu{
-  display:flex;
-  align-items:center;
-  justify-content:center;
+.menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 18px;
   flex-wrap: nowrap;
 }
-.item{
+.item {
   font-weight: 900;
   font-size: 18px;
-  color:#111827;
+  color: #111827;
   white-space: nowrap;
   text-decoration: none;
 }
-.item:hover{ text-decoration: underline; }
+.item:hover {
+  text-decoration: underline;
+}
 
-.vline{
+.vline {
   width: 1px;
   height: 26px;
-  background: rgba(16,24,40,.20);
+  background: rgba(16, 24, 40, 0.2);
 }
 
 /* ===== 下拉：容器 ===== */
-.dd{ position: relative; display:flex; align-items:center; }
+.dd {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
 
 /* ✅ 移除醜框框：button 跟一般 nav item 一致 */
-.item.has{
+.item.has {
   background: transparent !important;
   border: 0 !important;
   border-radius: 0 !important;
@@ -216,23 +294,25 @@ const links = {
   box-shadow: none !important;
   cursor: pointer;
 }
-.item.has:hover{
+.item.has:hover {
   background: transparent;
   text-decoration: underline;
 }
 
 /* caret */
-.caret{
+.caret {
   font-size: 12px;
   margin-left: 6px;
   position: relative;
   top: -1px;
-  transition: transform .18s ease;
+  transition: transform 0.18s ease;
 }
-.caret.up{ transform: rotate(180deg); }
+.caret.up {
+  transform: rotate(180deg);
+}
 
 /* ===== 下拉選單（小一點寬度 + 水藍色） ===== */
-.ddMenu{
+.ddMenu {
   position: absolute;
   top: 44px;
   left: 50%;
@@ -240,13 +320,13 @@ const links = {
   width: 180px;
   background: #f0f7ff;
   border-radius: 10px;
-  border: 1px solid rgba(15,58,99,.22);
-  box-shadow: 0 12px 22px rgba(15,58,99,.18);
+  border: 1px solid rgba(15, 58, 99, 0.22);
+  box-shadow: 0 12px 22px rgba(15, 58, 99, 0.18);
   padding: 6px 0;
   z-index: 50;
 }
 
-.ddItem{
+.ddItem {
   display: block;
   text-align: center;
   padding: 10px 12px;
@@ -256,19 +336,30 @@ const links = {
   text-decoration: none;
   line-height: 1.4;
 }
-.ddItem + .ddItem{
-  border-top: 1px solid rgba(15,58,99,.18);
+.ddItem + .ddItem {
+  border-top: 1px solid rgba(15, 58, 99, 0.18);
 }
-.ddItem:hover{
-  background: rgba(15,58,99,.08);
+.ddItem:hover {
+  background: rgba(15, 58, 99, 0.08);
 }
 
 /* RWD */
-@media (max-width: 980px){
-  .input{ width: 220px; }
-  .brandText .zh{ font-size: 18px; }
-  .brandText .en{ font-size: 13px; }
-  .item{ font-size: 15px; }
-  .menu{ gap: 12px; overflow-x:auto; }
+@media (max-width: 980px) {
+  .input {
+    width: 220px;
+  }
+  .brandText .zh {
+    font-size: 18px;
+  }
+  .brandText .en {
+    font-size: 13px;
+  }
+  .item {
+    font-size: 15px;
+  }
+  .menu {
+    gap: 12px;
+    overflow-x: auto;
+  }
 }
 </style>
