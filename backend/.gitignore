@@ -15,4 +15,4 @@ env/
 
 # 上傳檔案 (排除實體檔案，但保留目錄結構)
 uploads/**/*
-!uploads/.gitkeep
+!uploads/**/.gitkeep
