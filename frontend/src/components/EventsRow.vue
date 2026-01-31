@@ -5,7 +5,6 @@
         <div class="title">
           <span class="bar" aria-hidden="true"></span>
           <span class="t">活動列表</span>
-          <span class="t">活動列表</span>
         </div>
 
         <div class="modes" role="tablist" aria-label="顯示模式">
@@ -25,22 +24,6 @@
           >
             列表模式
           </button>
-          <button
-            class="mode"
-            :class="{ on: mode === 'card' }"
-            type="button"
-            @click="mode = 'card'"
-          >
-            卡片模式
-          </button>
-          <button
-            class="mode"
-            :class="{ on: mode === 'list' }"
-            type="button"
-            @click="mode = 'list'"
-          >
-            列表模式
-          </button>
         </div>
       </div>
 
@@ -50,40 +33,7 @@
         <button class="nav prev" aria-label="上一張" @click="slidePrev">
           ‹
         </button>
-      <div v-if="loading" class="loading-state">資料讀取中...</div>
 
-      <div v-else-if="mode === 'card'" class="body slider-body">
-        <button class="nav prev" aria-label="上一張" @click="slidePrev">
-          ‹
-        </button>
-
-        <div class="slider-viewport">
-          <div
-            class="track"
-            :style="{
-              transform: `translateX(-${sliderTranslateX}%)`,
-              transition: isResetting ? 'none' : 'transform 0.4s ease-in-out',
-            }"
-            @transitionend="handleTransitionEnd"
-          >
-            <article
-              v-for="(e, index) in displayEvents"
-              :key="`${e.id}-${index}`"
-              class="card-wrapper"
-            >
-              <div class="card">
-                <div class="thumb-img">
-                  <img
-                    :src="getImageUrl(e.local_img_path)"
-                    :alt="e.title"
-                    @error="handleImageError"
-                  />
-                  <span
-                    class="status-badge"
-                    :class="getStatusClass(e.status)"
-                    >{{ e.status }}</span
-                  >
-                </div>
         <div class="slider-viewport">
           <div
             class="track"
@@ -166,79 +116,17 @@
               </div>
             </article>
           </div>
-                <div class="content">
-                  <div class="meta-row">
-                    <span class="meta-item" title="瀏覽次數">
-                      <span class="icon">👁</span>
-                      <span class="label">瀏覽:</span>
-                      <span class="val">{{ e.views }}</span>
-                    </span>
-                    <span class="meta-divider">|</span>
-                    <span class="meta-item" title="報名人數">
-                      <span class="icon">👤</span>
-                      <span class="label">報名:</span>
-                      <span class="val">{{ e.joined }}</span>
-                    </span>
-                  </div>
-
-                  <div class="date">{{ formatDateShort(e.created_at) }}</div>
-                  <div class="name" :title="e.title">{{ e.title }}</div>
-
-                  <div class="tags-section">
-                    <div v-if="e.target_audience.length" class="tag-group">
-                      <span class="tag-label-text">對象:</span>
-                      <div class="tag-list">
-                        <span
-                          v-for="tag in e.target_audience"
-                          :key="tag"
-                          class="tag target"
-                          >{{ tag }}</span
-                        >
-                      </div>
-                    </div>
-                    <div v-if="e.sdg_labels.length" class="tag-group">
-                      <span class="tag-label-text">SDGs:</span>
-                      <div class="tag-list">
-                        <span
-                          v-for="tag in e.sdg_labels"
-                          :key="tag"
-                          class="tag sdg"
-                          >{{ tag }}</span
-                        >
-                      </div>
-                    </div>
-                  </div>
-
-                  <a
-                    :href="e.link"
-                    target="_blank"
-                    class="more"
-                    rel="noopener noreferrer"
-                    >查看詳情</a
-                  >
-                </div>
-              </div>
-            </article>
-          </div>
         </div>
 
         <button class="nav next" aria-label="下一張" @click="slideNext">
           ›
         </button>
-        <button class="nav next" aria-label="下一張" @click="slideNext">
-          ›
-        </button>
       </div>
 
-      <div v-else-if="mode === 'list'" class="listWrap">
       <div v-else-if="mode === 'list'" class="listWrap">
         <div class="list">
           <div v-for="e in events" :key="e.id" class="row">
             <div class="rDate">
-              <div class="d1">{{ formatDateShort(e.created_at) }}</div>
-              <div class="status-pill" :class="getStatusClass(e.status)">
-                {{ e.status }}
-              </div>
               <div class="d1">{{ formatDateShort(e.created_at) }}</div>
               <div class="status-pill" :class="getStatusClass(e.status)">
                 {{ e.status }}
@@ -276,40 +164,9 @@
                 <span class="r-divider">/</span>
                 <span class="meta-mini">報名: {{ e.joined }}</span>
               </div>
-              <div class="rTitle">
-                <a :href="e.link" target="_blank">{{ e.title }}</a>
-              </div>
-              <div class="rMeta">
-                <div class="r-tags" v-if="e.target_audience.length">
-                  <span class="r-label">對象:</span>
-                  <span
-                    class="tag target mini"
-                    v-for="t in e.target_audience"
-                    :key="t"
-                    >{{ t }}</span
-                  >
-                </div>
-
-                <div class="r-tags" v-if="e.sdg_labels.length">
-                  <span class="r-divider">/</span>
-                  <span class="r-label">SDGs:</span>
-                  <span
-                    class="tag sdg mini"
-                    v-for="s in e.sdg_labels"
-                    :key="s"
-                    >{{ s }}</span
-                  >
-                </div>
-
-                <span class="r-divider">/</span>
-                <span class="meta-mini">瀏覽: {{ e.views }}</span>
-                <span class="r-divider">/</span>
-                <span class="meta-mini">報名: {{ e.joined }}</span>
-              </div>
             </div>
 
             <div class="rAct">
-              <a :href="e.link" target="_blank" class="more small">查看詳情</a>
               <a :href="e.link" target="_blank" class="more small">查看詳情</a>
             </div>
           </div>
@@ -320,8 +177,6 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted, watch } from "vue";
-import { getActivities } from "../api/activity";
 import { computed, ref, onMounted, watch } from "vue";
 import { getActivities } from "../api/activity";
 
@@ -464,15 +319,8 @@ function formatDateShort(dateStr) {
 <style scoped>
 /* ================= 全局容器 ================= */
 #weekly-events {
-/* ================= 全局容器 ================= */
-#weekly-events {
   scroll-margin-top: 90px;
 }
-.eventWrap {
-  margin-top: 18px;
-}
-.eventCard {
-  background: #fff;
 .eventWrap {
   margin-top: 18px;
 }
@@ -481,16 +329,9 @@ function formatDateShort(dateStr) {
   border-radius: 26px;
   box-shadow: 0 10px 28px rgba(16, 24, 40, 0.1);
   border: 1px solid rgba(16, 24, 40, 0.08);
-  box-shadow: 0 10px 28px rgba(16, 24, 40, 0.1);
-  border: 1px solid rgba(16, 24, 40, 0.08);
   padding: 34px 34px 28px;
 }
 
-/* ================= 標題區 ================= */
-.head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
 /* ================= 標題區 ================= */
 .head {
   display: flex;
@@ -515,10 +356,7 @@ function formatDateShort(dateStr) {
   font-weight: 700;
   color: #0f172a;
   letter-spacing: 0.2px;
-  color: #0f172a;
-  letter-spacing: 0.2px;
 }
-
 
 .modes {
   display: flex;
@@ -532,9 +370,6 @@ function formatDateShort(dateStr) {
   border: 1px solid rgba(16, 24, 40, 0.18);
   background: #fff;
   color: #6b7280;
-  border: 1px solid rgba(16, 24, 40, 0.18);
-  background: #fff;
-  color: #6b7280;
   font-weight: 700;
   font-size: 0.95rem;
   cursor: pointer;
@@ -544,7 +379,6 @@ function formatDateShort(dateStr) {
   color: #fff;
   border-color: rgba(15, 58, 99, 0.35);
 }
-
 
 .body {
   position: relative;
@@ -592,12 +426,9 @@ function formatDateShort(dateStr) {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 44px;
-  height: 44px;
-
-  /* 去掉白圈與陰影 */
-  background: transparent;
-  box-shadow: none;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
   border: 0;
   background: #fff;
   box-shadow: 0 10px 24px rgba(16, 24, 40, 0.14);
@@ -617,7 +448,6 @@ function formatDateShort(dateStr) {
 }
 .next {
   right: -6px;
-
 }
 
 /* ================= 卡片本體樣式 ================= */
@@ -704,7 +534,6 @@ function formatDateShort(dateStr) {
   color: #3b82f6;
   font-weight: 700;
 }
-
 
 .name {
   font-size: 1.1rem;
@@ -930,4 +759,3 @@ function formatDateShort(dateStr) {
   }
 }
 </style>
-

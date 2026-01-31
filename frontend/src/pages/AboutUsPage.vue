@@ -90,9 +90,8 @@
 import { computed, ref, onMounted } from "vue";
 import { RouterLink } from "vue-router";
 import avatarPlaceholder from "../assets/avatar_placeholder.png";
-import { fetchMembers } from "../api/member"; // ✅ 新增：member API
+import { fetchMembers } from "../api/member"; 
 
-// ✅ 這裡的 key 要跟後端回傳的 unit_key / unitKey 對得上
 const unitDefs = [
   { key: "osa", name: "學務處" },
   { key: "life", name: "生活輔導組" },
@@ -106,21 +105,16 @@ const unitDefs = [
 ];
 
 const activeUnitKey = ref("osa");
-
-// ✅ API 狀態
 const loading = ref(false);
 const errorMsg = ref("");
 const members = ref([]);
 
-// ✅ 取得資料
 async function loadMembers() {
   loading.value = true;
   errorMsg.value = "";
   try {
     const res = await fetchMembers({ locale: "zh-TW", page: 1, size: 200 });
     const data = res?.data;
-
-    // 兼容：array / {items} / {data:{items}}
     const items = data?.items ?? data?.data?.items ?? data?.data ?? data ?? [];
     members.value = Array.isArray(items) ? items : [];
   } catch (e) {
@@ -134,17 +128,15 @@ async function loadMembers() {
 
 onMounted(loadMembers);
 
-// ✅ 將 members 依 unitKey 分組（這裡假設後端給 unit_key 或 unitKey）
 const membersByUnit = computed(() => {
   const map = {};
   for (const m of members.value) {
-    const key = m.unit_key ?? m.unitKey ?? "osa"; // 沒有就先丟 osa（避免爆）
+    const key = m.unit_key ?? m.unitKey ?? "osa"; 
     (map[key] ||= []).push(m);
   }
   return map;
 });
 
-// ✅ units 用「def + count」組合，count 用資料算
 const units = computed(() =>
   unitDefs.map((u) => ({
     ...u,
@@ -158,7 +150,6 @@ const activeUnit = computed(
 
 const activePeople = computed(() => membersByUnit.value[activeUnitKey.value] || []);
 
-// ✅ 頭像：如果後端有 avatar_url 就用，沒有就用 placeholder
 function getAvatarUrl(p) {
   return p.avatar_url || p.avatarUrl || avatarPlaceholder;
 }
@@ -436,10 +427,13 @@ function getAvatarUrl(p) {
   background: rgba(255,0,0,.06);
   color: #991b1b;
 }
+
 .state {
   padding: 16px;
   border-radius: 12px;
   background: rgba(0,0,0,.04);
+  /* 修正：狀態提示 16px */
+  font-size: var(--text-base);
   color: #334155;
 }
 .state--error {

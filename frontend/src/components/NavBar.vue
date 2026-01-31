@@ -171,7 +171,8 @@ const links = {
   background: #fff;
 }
 
-.mid{
+/* 中間那塊淺藍背景 */
+.mid {
   background: #eaf4ff;
   border-bottom: 1px solid rgba(21, 58, 99, 0.22);
 }
@@ -183,9 +184,17 @@ const links = {
   gap: 16px;
 }
 
-.brand{ display:flex; align-items:center; gap: 14px; }
-.logo{ height: 44px; width: auto; }
-.brandText .zh{
+/* Logo / 標題 */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.logo {
+  height: 44px;
+  width: auto;
+}
+.brandText .zh {
   font-weight: 900;
   /* 修正：單位名稱標題統一為 24px */
   font-size: var(--text-2xl);
@@ -215,11 +224,10 @@ const links = {
   width: 44px;
   height: 44px;
   border-radius: 999px;
-  border: 1px solid rgba(16,24,40,.18);
-  background:#fff;
-  cursor:pointer;
-  /* 修正：圖示按鈕文字標準化 18px */
-  font-size: var(--text-lg);
+  border: 1px solid rgba(16, 24, 40, 0.18);
+  background: #fff;
+  cursor: pointer;
+  font-size: 18px;
 }
 
 .navStrip{
@@ -257,8 +265,15 @@ const links = {
   background: rgba(16, 24, 40, 0.2);
 }
 
-.dd{ position: relative; display:flex; align-items:center; }
-.item.has{
+/* ===== 下拉：容器 ===== */
+.dd {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* ✅ 移除醜框框：button 跟一般 nav item 一致 */
+.item.has {
   background: transparent !important;
   border: 0 !important;
   border-radius: 0 !important;
@@ -271,9 +286,9 @@ const links = {
   text-decoration: underline;
 }
 
-.caret{
-  /* 修正：小圖示使用極小字 12px */
-  font-size: var(--text-xs);
+/* caret */
+.caret {
+  font-size: 12px;
   margin-left: 6px;
   position: relative;
   top: -1px;
@@ -283,7 +298,8 @@ const links = {
   transform: rotate(180deg);
 }
 
-.ddMenu{
+/* ===== 下拉選單（小一點寬度 + 水藍色） ===== */
+.ddMenu {
   position: absolute;
   top: 44px;
   left: 50%;
@@ -316,14 +332,22 @@ const links = {
 }
 
 /* RWD */
-@media (max-width: 980px){
-  .input{ width: 220px; }
-  /* 修正：手機版標題降級為 18px */
-  .brandText .zh{ font-size: var(--text-lg); }
-  /* 修正：手機版輔助文字 14px */
-  .brandText .en{ font-size: var(--text-sm); }
-  /* 修正：手機版選單維持 16px */
-  .item{ font-size: var(--text-base); }
-  .menu{ gap: 12px; overflow-x:auto; }
+@media (max-width: 980px) {
+  .input {
+    width: 220px;
+  }
+  .brandText .zh {
+    font-size: 18px;
+  }
+  .brandText .en {
+    font-size: 13px;
+  }
+  .item {
+    font-size: 15px;
+  }
+  .menu {
+    gap: 12px;
+    overflow-x: auto;
+  }
 }
 </style>
