@@ -1,26 +1,15 @@
-# app/routers/member_router.py
 from typing import List
-from fastapi import APIRouter, Depends, Query, Path
-
-from app.schemas.member_schema import DepartmentPublic, DepartmentWithMembers
+from fastapi import APIRouter, Depends, Query
+from app.schemas.member_schema import DepartmentMemberView
 from app.services.member_service import MemberService
-from app.dependencies import get_member_service  # 你要在 dependencies 加這個
+from app.dependencies import get_member_service
 
-router = APIRouter(prefix="/departments", tags=["Departments"])
+router = APIRouter(prefix="/members", tags=["Organization Members"])
 
-
-@router.get("/", response_model=List[DepartmentPublic])
-def get_departments(
-    locale: str = Query("zh-TW", description="語言代碼 (zh-TW, en-US)"),
-    service: MemberService = Depends(get_member_service),
+@router.get("/", response_model=List[DepartmentMemberView])
+def list_department_members(
+    locale: str = Query("zh-TW", description="語言代碼"),
+    service: MemberService = Depends(get_member_service)
 ):
-    return service.get_departments(locale=locale)
-
-
-@router.get("/{department_id}/members", response_model=DepartmentWithMembers)
-def get_department_members(
-    department_id: int = Path(..., ge=1),
-    locale: str = Query("zh-TW", description="語言代碼 (zh-TW, en-US)"),
-    service: MemberService = Depends(get_member_service),
-):
-    return service.get_members_by_department(department_id=department_id, locale=locale)
+    """取得所有啟用部門及其成員（不在此層做 status 過濾）"""
+    return service.get_organized_members(locale=locale)
