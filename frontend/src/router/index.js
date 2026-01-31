@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from "../pages/Home.vue";
+import Home from "../pages/HomePage.vue";
 import NewsList from "../pages/NewsList.vue";
 import ServiceResources from "../pages/ServiceResources.vue";
 // import Downloads from "../pages/Downloads.vue"; 先改成下面這個
