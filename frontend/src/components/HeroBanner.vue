@@ -152,7 +152,7 @@ onBeforeUnmount(() => {
 }
 
 .right{
-  background: #706baa;
+  background: #a9bfeb;
   color: #fff;
   padding: 2.4rem 2.6rem;
   display: flex;
@@ -164,7 +164,7 @@ onBeforeUnmount(() => {
   /* 修正：大幅提升標題氣勢 (36px) 並套用緊湊行高 (1.3) */
   font-size: var(--text-4xl);
   font-weight: 700;
-  color: #ffd445;
+  color: #1F3A5F;
   line-height: var(--leading-tight);
 }
 .desc{
@@ -181,8 +181,8 @@ onBeforeUnmount(() => {
   height: 56px;
   border-radius: 999px;
   border: 0;
-  background: #f2cf57;
-  color: #111827;
+  background: #f2c94c;
+  color: #1F2D3D;
   font-weight: 700;
   /* 修正：按鈕保持標準 16px 大小 */
   font-size: var(--text-base);

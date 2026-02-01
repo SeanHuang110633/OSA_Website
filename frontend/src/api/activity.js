@@ -6,5 +6,5 @@ import service from "./request";
  * @returns {Promise}
  */
 export function getActivities() {
-  return service.get("/activities");
+  return service.get("/activities/");
 }

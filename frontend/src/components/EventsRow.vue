@@ -202,6 +202,7 @@ function updateItemsPerView() {
 // ----------------------------------------------------------------
 // 資料載入與處理
 // ----------------------------------------------------------------
+// EventsRow.vue 裡的 onMounted 修正
 onMounted(async () => {
   updateItemsPerView();
   window.addEventListener("resize", updateItemsPerView);
@@ -209,9 +210,19 @@ onMounted(async () => {
   loading.value = true;
   try {
     const data = await getActivities();
-    events.value = data;
+    console.log("從攔截器拿到的直接資料:", data);
+
+    // 因為 request.js 已經做了 return response.data
+    // 所以這裡得到的 data 直接就是後端回傳的 Array
+    if (Array.isArray(data)) {
+      events.value = data;
+    } else {
+      // 防呆：萬一後端格式變了
+      events.value = data?.items || [];
+    }
+
   } catch (error) {
-    console.error("Failed to fetch activities", error);
+    console.error("無法取得活動列表:", error);
   } finally {
     loading.value = false;
   }
