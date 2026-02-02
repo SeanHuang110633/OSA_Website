@@ -5,9 +5,11 @@ from fastapi import FastAPI  # Web 框架核心
 from fastapi.middleware.cors import CORSMiddleware  # 處理跨來源資源共用的安全性設定
 from fastapi.staticfiles import StaticFiles  # 讓 FastAPI 可以讀取並顯示靜態檔案（如圖片）
 from app.core.database import engine # 直接引入 engine，確保資料庫連線在 App 啟動時建立
-from app.routers import event_router  # 8. 引入「活動消息模組」的 API Router
+from app.routers import event_router  # 引入「活動消息模組」的 API Router
 from app.routers import activity_router  # 引入「下載資源模組」的 API Router
-from app.routers import resource_router
+from app.routers import resource_router  # 引入「資源模組」的 API Router
+from app.routers import download_router  # 引入「下載資源模組」的 API Router
+from app.routers import member_router  # 引入「會員模組」的 API Router
 
 
 # =========================================================
@@ -71,6 +73,7 @@ app.include_router(event_router.router, prefix="/api")
 app.include_router(download_router.router, prefix="/api")
 app.include_router(activity_router.router, prefix="/api")
 app.include_router(resource_router.router, prefix="/api")
+app.include_router(member_router.router, prefix="/api")
 
 # =========================================================
 # 程式進入點

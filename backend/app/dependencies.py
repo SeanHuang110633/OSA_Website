@@ -35,6 +35,7 @@ def get_download_service(session: Session = Depends(get_session)) -> DownloadSer
 def get_activity_service(session: Session = Depends(get_session)) -> ActivityService:
     return ActivityService(ActivityRepository(session))
 
+# member_service 依賴注入工廠
 def get_member_service(session: Session = Depends(get_session)) -> MemberService:
     return MemberService(MemberRepository(session))
 
