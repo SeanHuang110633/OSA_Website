@@ -6,7 +6,10 @@
       <span class="now">服務資源</span>
     </div>
 
-    <section class="grid">
+    <p v-if="loading">載入中...</p>
+    <p v-else-if="error" style="color:#b91c1c;">{{ error }}</p>
+
+    <section v-else class="grid">
       <article
         v-for="c in cards"
         :key="c.id"
@@ -19,8 +22,27 @@
         </div>
 
         <ul class="links">
-          <li v-for="(x,i) in c.items" :key="i">
-            <a href="#">{{ x }}</a>
+          <li v-for="item in c.items" :key="item.id">
+            <!-- link: 開外部新分頁 -->
+            <a
+              v-if="item.kind === 'link'"
+              :href="item.href"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ item.text }}
+            </a>
+
+            <!-- article: 走站內 detail page（仍然是「新分頁」需求可用 target=_blank + router-link 的 href） -->
+            <RouterLink
+              v-else
+              :to="item.to"
+              class="articleLink"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ item.text }}
+            </RouterLink>
           </li>
         </ul>
       </article>
@@ -29,45 +51,108 @@
 </template>
 
 <script setup>
+import { onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
+import { getResources } from "../api/serviceResources.js"; // ✅ 依你實際路徑調整
 
-const cards = [
-  {
-    id: 1, frame: "f1", icon: "🎓", title: "生活輔導",
-    items: ["學生工讀","研究生獎助學金","獎助學金暨工讀管理系統","就學貸款","學雜費減免","急難救助","學生請假","學生兵役","國軍班隊招募專區","役期抵免","失物招領"]
-  },
-  {
-    id: 2, frame: "f2", icon: "🏠", title: "學生住宿",
-    items: ["學生宿舍介紹","學生宿舍設備","學生宿舍申請","獎勵團體學生宿舍","學生宿舍退費","學生宿舍修繕通報","學生宿舍管委會","宿舍導師","學生宿舍電子佈告欄申請","校外賃居資訊"]
-  },
-  {
-    id: 3, frame: "f3", icon: "🩺", title: "衛生保健",
-    items: ["健康檢查報告","醫療器材借用","學生團體保險","醫療諮詢","衛教諮詢","特約醫院"]
-  },
-  {
-    id: 4, frame: "f4", icon: "💬", title: "諮商輔導",
-    items: ["預約心理諮商","心理測驗","導師知能","小松鼠志工隊","輔導股長","資源教室"]
-  },
-  {
-    id: 5, frame: "f5", icon: "🎉", title: "課外活動",
-    items: ["學生社團場地借用"]
-  },
-  {
-    id: 6, frame: "f6", icon: "💼", title: "職涯輔導",
-    items: ["職涯發展中心FB粉絲專頁","職涯中心活動報名系統","職涯活動預約系統","傑出領導獎學金申請","中央大學校園徵才資訊網","UCAN職涯測評"]
-  },
-  {
-    id: 7, frame: "f7", icon: "🧩", title: "服務學習",
-    items: ["服務學習教育認證時數","服務學習表單下載","服務學習最新消息","服務學習活動"]
-  },
-  {
-    id: 8, frame: "f8", icon: "🔗", title: "其他",
-    items: ["學務處聯絡資訊","職涯諮詢預約","宿舍導師諮詢預約","學生輔導資訊網","性別平等教育委員會","學生意見反映","學生申訴"]
-  },
-];
+// 你原本 8 張卡的「骨架」：用 category_id 對應
+const cards = ref([
+  { id: 1, frame: "f1", icon: "🎓", title: "生活輔導", items: [] },
+  { id: 2, frame: "f2", icon: "🏠", title: "學生住宿", items: [] },
+  { id: 3, frame: "f3", icon: "🩺", title: "衛生保健", items: [] },
+  { id: 4, frame: "f4", icon: "💬", title: "諮商輔導", items: [] },
+  { id: 5, frame: "f5", icon: "🎉", title: "課外活動", items: [] },
+  { id: 6, frame: "f6", icon: "💼", title: "職涯輔導", items: [] },
+  { id: 7, frame: "f7", icon: "🧩", title: "服務學習", items: [] },
+  { id: 8, frame: "f8", icon: "🔗", title: "其他", items: [] },
+]);
+
+const loading = ref(false);
+const error = ref("");
+
+/** 如果後端回的是 JSON 多語系，這裡做 fallback */
+function pickLocaleValue(val, locale) {
+  if (val == null) return "";
+  if (typeof val === "string") return val;
+  // val 可能是 { "zh-TW": "...", "en-US": "..." }
+  return val[locale] ?? val["zh-TW"] ?? val["en-US"] ?? "";
+}
+
+/** 同理：url 也可能是多語系 JSON */
+function pickUrl(val, locale) {
+  const u = pickLocaleValue(val, locale);
+  return u || "";
+}
+
+async function fetchResources() {
+  loading.value = true;
+  error.value = "";
+  try {
+    const locale = "zh-TW"; // ✅ 之後你可以改成從 Pinia/設定拿
+    const res = await getResources({ locale });
+
+    // 依你的 request 實作，這裡可能是 res.data 或 res
+    const raw = res.data ?? res;
+
+    // 可能後端回 { items: [...] } 或直接 [...]
+    const list = raw.items ?? raw.data ?? raw.results ?? raw ?? [];
+
+    // 先清空
+    for (const c of cards.value) c.items = [];
+
+    // 分組塞回 cards
+    for (const r of list) {
+      const categoryId = r.category_id;
+      const card = cards.value.find((c) => c.id === categoryId);
+      if (!card) continue;
+
+      const text = pickLocaleValue(r.title, locale) || "(未命名)";
+      const href = pickUrl(r.url, locale);
+      const content = pickLocaleValue(r.content, locale);
+
+      // 規則：有 url → link；沒有 url 但有 content/type=article → detail
+      if (href) {
+        card.items.push({
+          id: r.id,
+          kind: "link",
+          text,
+          href,
+          sort: r.sort_order ?? 0,
+        });
+      } else {
+        card.items.push({
+          id: r.id,
+          kind: "article",
+          text,
+          to: `/resources/${r.id}`,
+          sort: r.sort_order ?? 0,
+        });
+      }
+    }
+
+    // 每張卡內依 sort_order 排序（你 DB 有 sort_order）
+    for (const c of cards.value) {
+      c.items.sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0));
+    }
+  } catch (e) {
+    error.value = e?.message ?? "載入失敗，請稍後再試";
+  } finally {
+    loading.value = false;
+  }
+}
+
+onMounted(fetchResources);
 </script>
 
 <style scoped>
+/* 你原本的 CSS 全部保留不動，只多補 RouterLink 顏色一致 */
+.articleLink{
+  font-size: 1rem;
+  font-weight: 500;
+  color:#111827;
+  text-decoration: none;
+}
+.articleLink:hover{ text-decoration: underline; }
 
 .page{
   padding: 1.2rem 0 3.2rem;
