@@ -70,8 +70,6 @@ import squirrel from "../assets/OHD_squirrel.png";
 </script>
 
 <style scoped>
-
-
 .wrap{
   position: relative;
   background: #d7d7d7;
@@ -90,7 +88,8 @@ import squirrel from "../assets/OHD_squirrel.png";
 .title{
   text-align:center;
   font-weight: 700;         
-  font-size: 1.55rem;        
+  /* 修正：區塊大標題統一為 24px */
+  font-size: var(--text-2xl);        
   letter-spacing: .12em;
   color:#0f3a63;
   margin-bottom: 1.6rem;
@@ -128,10 +127,11 @@ import squirrel from "../assets/OHD_squirrel.png";
 
 .head h3{
   margin:0;
-  font-size: 1.5rem;
+  /* 修正：卡片標題降級為 20px，不應與區塊大標一樣大 */
+  font-size: var(--text-xl);
   font-weight: 700;
   color:#111827;
-  line-height: 1.25;
+  line-height: var(--leading-tight);
 }
 
 .ico{
@@ -141,12 +141,14 @@ import squirrel from "../assets/OHD_squirrel.png";
   background: #f2f4f7;
   display:grid;
   place-items:center;
-  font-size: .95rem;
+  /* 修正：輔助圖示文字 16px */
+  font-size: var(--text-base);
   border: 1px solid rgba(16,24,40,.10);
 }
 
 .tag{
-  font-size: .78rem;
+  /* 修正：標籤使用極小字 12px */
+  font-size: var(--text-xs);
   font-weight: 700;
   color:#0f3a63;
   background:#e8f1ff;
@@ -166,9 +168,10 @@ ul{
 
 a{
   color:#111827;
-  font-size: .95rem;
+  /* 修正：連結內文標準化 16px 並設定行高 */
+  font-size: var(--text-base);
   font-weight: 500;
-  line-height: 1.55;
+  line-height: var(--leading-normal);
 }
 a:hover{ text-decoration: underline; }
 
@@ -180,6 +183,7 @@ a:hover{ text-decoration: underline; }
 @media (max-width: 640px){
   .grid{ grid-template-columns: 1fr; }
   .wrap{ padding: 3.5rem 0 3.5rem; }
-  .title{ font-size: 1.4rem; }
+  /* 修正：手機版標題 18px */
+  .title{ font-size: var(--text-lg); }
 }
 </style>

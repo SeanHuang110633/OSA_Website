@@ -163,7 +163,8 @@ onMounted(fetchResources);
   align-items:center;
   gap:.5rem;
   margin:.6rem 0 1.2rem;
-  font-size:.86rem;
+  /* 修正：消滅 0.86rem，統一改用 14px */
+  font-size: var(--text-sm); 
   color:#6b7280;
 }
 .crumbLink{ color:#6b7280; }
@@ -204,11 +205,14 @@ onMounted(fetchResources);
   border: 1px solid rgba(16,24,40,.10);
   display:grid;
   place-items:center;
-  font-size:1rem;
+  /* 修正：圖示容器內的文字大小標準化 */
+  font-size: var(--text-base); 
 }
 .cardTitle{
   margin:0;
-  font-size:1.5rem;
+  /* 修正：卡片標題使用 20px 並套用緊湊行高 */
+  font-size: var(--text-xl); 
+  line-height: var(--leading-tight);
   font-weight:700;
   color:#111827;
 }
@@ -221,9 +225,13 @@ onMounted(fetchResources);
   gap:.6rem;
 }
 .links a{
-  font-size:1rem;
+  /* 修正：內文標準化 16px */
+  font-size: var(--text-base);
+  /* 修正：增加內文行高提升易讀性 */
+  line-height: var(--leading-normal); 
   font-weight:500;
   color:#111827;
+  text-decoration: none;
 }
 .links a:hover{ text-decoration: underline; }
 

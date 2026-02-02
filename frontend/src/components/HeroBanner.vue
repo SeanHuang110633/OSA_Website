@@ -122,7 +122,7 @@ onBeforeUnmount(() => {
   overflow: hidden;
   background: #fff;
   box-shadow: 0 16px 38px rgba(16,24,40,.10);
-  border: 1px solid rgba(16,24,40,.08);
+  border: 1px solid rgba(117, 53, 174, 0.296);
 }
 
 .track{
@@ -152,7 +152,7 @@ onBeforeUnmount(() => {
 }
 
 .right{
-  background: #0f2f45;
+  background: #a9bfeb;
   color: #fff;
   padding: 2.4rem 2.6rem;
   display: flex;
@@ -161,16 +161,18 @@ onBeforeUnmount(() => {
 }
 .title{
   margin: 0;
-  font-size: 1.55rem;
+  /* 修正：大幅提升標題氣勢 (36px) 並套用緊湊行高 (1.3) */
+  font-size: var(--text-4xl);
   font-weight: 700;
-  color: #f2cf57;
-  line-height: 1.35;
+  color: #1F3A5F;
+  line-height: var(--leading-tight);
 }
 .desc{
   margin: 0;
-  font-size: 1rem;
+  /* 修正：副標題微調大 (18px) 並增加內文行高 (1.6) */
+  font-size: var(--text-lg);
   font-weight: 400;
-  line-height: 1.9;
+  line-height: var(--leading-normal);
   opacity: .92;
 }
 .cta{
@@ -179,33 +181,31 @@ onBeforeUnmount(() => {
   height: 56px;
   border-radius: 999px;
   border: 0;
-  background: #f2cf57;
-  color: #111827;
+  background: #f2c94c;
+  color: #1F2D3D;
   font-weight: 700;
-  font-size: 1.05rem;
+  /* 修正：按鈕保持標準 16px 大小 */
+  font-size: var(--text-base);
   cursor: pointer;
 }
 
-/* 左右箭頭：去掉白色圈圈，只留 ‹ ›（仍可點） */
 .nav{
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 44px;                 /* 點擊區仍夠大 */
+  width: 44px;
   height: 44px;
   border: 0;
-  background: transparent;     /* ✅ 沒有白底 */
-  box-shadow: none;            /* ✅ 沒有陰影 */
-  border-radius: 0;            /* ✅ 不要圓形 */
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
   cursor: pointer;
   z-index: 5;
-
   display: grid;
   place-items: center;
-
-  font-size: 44px;             /* 只留箭頭，視覺清楚 */
+  font-size: 44px;
   line-height: 1;
-  color: rgba(17,24,39,.55);   /* 低存在感 */
+  color: rgba(17,24,39,.55);
   user-select: none;
 }
 
@@ -221,7 +221,7 @@ onBeforeUnmount(() => {
 }
 
 .nav:focus-visible{
-  outline: 2px solid rgba(242,207,87,.9); /* 需要可及性就留 */
+  outline: 2px solid rgba(242,207,87,.9);
   outline-offset: 3px;
 }
 .dots{
@@ -248,6 +248,8 @@ onBeforeUnmount(() => {
 @media (max-width: 980px){
   .slide{ grid-template-columns: 1fr; }
   .right{ padding: 1.6rem 1.4rem; }
+  /* 手機版適度降級標題大小以避免破版 */
+  .title { font-size: var(--text-2xl); }
   .prev{ left: 10px; }
   .next{ right: 10px; }
 }

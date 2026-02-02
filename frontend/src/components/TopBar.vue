@@ -12,25 +12,42 @@
 </template>
 
 <style scoped>
-.topbar{
+.topbar {
   background: var(--blue-900);
-  color:#fff;
-  font-size: 14px;
+  color: #fff;
+  /* 修正：使用規範中的輔助資訊大小 (14px) */
+  font-size: var(--text-sm);
 }
-.inner{
+
+.inner {
   height: 44px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
-.right{
-  margin-left:auto;
-  display:flex;
-  align-items:center;
-  gap:10px;
+
+.right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* 增加行高規範以統一全站文字渲染 */
+  line-height: var(--leading-tight);
   font-weight: 700;
 }
-.link{ color:#fff; opacity:.95; }
-.link:hover{ opacity:1; text-decoration:underline; }
-.sep{ opacity:.7; }
+
+.link {
+  color: #fff;
+  opacity: .95;
+  text-decoration: none;
+}
+
+.link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.sep {
+  opacity: .7;
+}
 </style>

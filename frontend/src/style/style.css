@@ -1,163 +1,177 @@
-:root{
-  --blue-900:#153a63;
-  --blue-100:#dceaf7;
-  --ink:#1f2f3d;
+/* 國立中央大學學務處 - 全域樣式表 (CSS Variables Edition)
+  依照《前端字體排版規範》重構，解決繁體中文筆畫沾黏與層級混亂問題。
+*/
 
-  --page:#f4f6f8;
-  --card:#ffffff;
-  --line:#e6e9ee;
+:root {
+  /* --- 1. 品牌顏色與基礎設定 --- */
+  --blue-900: #153a63;
+  --blue-100: #dceaf7;
+  --ink: #1f2f3d;
+  --page: #f4f6f8;
+  --card: #ffffff;
+  --line: #e6e9ee;
+  
+  --btn: #f1c84c;
+  --btn-hover: #e7bb33;
 
-  --shadow:0 8px 24px rgba(16,24,40,.08);
+  --text: #1b2430;
+  --muted: #667085;
+  --shadow: 0 8px 24px rgba(16, 24, 40, .08);
 
-  --radius:14px;
-  --radius-lg:18px;
+  /* --- 2. 字體大小階層 (Scale) --- */
+  /* 基準值為 16px，使用 rem 確保跨裝置縮放一致 */
+  --text-xs: 0.75rem;    /* 12px: 標籤、極次要註解 */
+  --text-sm: 0.875rem;   /* 14px: 日期、Meta資訊、頁腳 */
+  --text-base: 1rem;     /* 16px: 標準內文、新聞列表、按鈕 (預設) */
+  --text-lg: 1.125rem;   /* 18px: 強調文字、副標題 */
+  --text-xl: 1.25rem;    /* 20px: 卡片標題 (Card Title)、H3 */
+  --text-2xl: 1.5rem;    /* 24px: 區塊大標題 (Section Title)、H2 */
+  --text-3xl: 1.875rem;  /* 30px: 頁面主標題 (Page Title)、H1 */
+  --text-4xl: 2.25rem;   /* 36px: 首頁 Hero Banner 標題 */
 
-  --btn:#f1c84c;
-  --btn-hover:#e7bb33;
+  /* --- 3. 行高 (Line Height) --- */
+  --leading-tight: 1.3;  /* 用於標題，防止換行時行距過大 */
+  --leading-normal: 1.6; /* 用於內文，增加呼吸感，解決筆畫模糊 */
 
-  --text:#1b2430;
-  --muted:#667085;
-
-  --font-sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",
-              system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
-
-  --ui-scale: 0.92;
-
-  --base-font: 14px;
-
+  /* --- 4. 其他佈局規範 --- */
+  --font-sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, -apple-system, Arial, sans-serif;
   --container-max: 1320px;
+  --radius: 14px;
+  --radius-lg: 18px;
 }
 
-*{ box-sizing:border-box; }
-html, body{ height:100%; }
-
-html{
-  font-size: calc(var(--base-font) * var(--ui-scale));
+/* --- 基礎重置 (Base Reset) --- */
+* { 
+  box-sizing: border-box; 
 }
 
-body{
-  margin:0;
+html {
+  /* 強制鎖定基準為 16px，確保所有 rem 換算符合規範數值 */
+  font-size: 16px; 
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  height: 100%;
   font-family: var(--font-sans);
   font-weight: 400;
   background: var(--page);
   color: var(--text);
-  line-height: 1.5;
+  /* 預設採用內文行高規範 */
+  line-height: var(--leading-normal); 
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#app{ min-height:100%; }
+#app { 
+  min-height: 100%; 
+  /* 預設內文大小 */
+  font-size: var(--text-base); 
+}
 
-a{ color:inherit; text-decoration:none; }
-a:hover{ text-decoration: underline; }
-button, input, select, textarea{ font-family: inherit; }
+/* --- 連結與交互 --- */
+a { 
+  color: inherit; 
+  text-decoration: none; 
+  transition: opacity 0.2s;
+}
 
-.container{
+a:hover { 
+  text-decoration: underline; 
+}
+
+button, input, select, textarea { 
+  font-family: inherit; 
+  font-size: inherit; /* 確保繼承父層變數設定 */
+}
+
+/* --- 通用佈局組件 --- */
+.container {
   width: min(var(--container-max), calc(100% - 24px));
   margin: 0 auto;
 }
 
-.section{ margin-top: 18px; }
+.section { 
+  margin-top: 2rem; 
+}
 
-.card{
+.card {
   background: var(--card);
-  border-radius: calc(var(--radius) * var(--ui-scale));
+  border-radius: var(--radius);
   box-shadow: var(--shadow);
-  border: 1px solid rgba(16,24,40,.06);
+  border: 1px solid rgba(16, 24, 40, 0.06);
 }
 
-.hr-soft{ height:1px; background: var(--line); }
-
-
-h1, h2, h3, h4, h5, h6{
-  font-weight: 700;
-  color: #111827;
-  margin: 0;
+.hr-soft { 
+  height: 1px; 
+  background: var(--line); 
+  border: 0;
+  margin: 1.5rem 0;
 }
 
-.h1, .h2, .h3, .h4, .h5, .h6,
-.sideTitle, .sectionTitle, .head h2{
-  font-weight: 700 !important;
-  color: #111827;
+/* --- 標題體系 (配合規範 Step 2) --- */
+h1, .h1 { 
+  font-size: var(--text-3xl); 
+  line-height: var(--leading-tight); 
 }
 
-small, .muted{ color: var(--muted); }
+h2, .h2, .sectionTitle, .head h2 { 
+  font-size: var(--text-2xl); 
+  line-height: var(--leading-tight); 
+}
 
-.pill-btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding: 10px 18px;
+h3, .h3, .cardTitle, .sideTitle { 
+  font-size: var(--text-xl); 
+  line-height: var(--leading-tight); 
+}
+
+/* --- 特殊組件標準化 --- */
+.pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 22px;
   border-radius: 999px;
   border: 0;
   background: var(--btn);
-  color:#1b2430;
-  cursor:pointer;
-}
-.pill-btn:hover{ background: var(--btn-hover); }
-
-.navStrip .menu,
-.navStrip .menu a,
-.navStrip .menu .item,
-.navStrip .menu .dd__link{
-  font-size: 1.25rem;   
-  font-weight: 400;
-  line-height: 1.2;
+  color: #1b2430;
+  font-size: var(--text-base); /* 標準化為 16px */
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
-.navStrip .menu a:hover{
-  text-decoration: underline;
+.pill-btn:hover { 
+  background: var(--btn-hover); 
+  text-decoration: none;
 }
 
-.board, .panel{
-  border-radius: calc(22px * var(--ui-scale));
-  box-shadow: var(--shadow);
+/* 輔助文字樣式 */
+small, .muted, .badgeTxt { 
+  color: var(--muted); 
+  font-size: var(--text-sm); /* 標準化為 14px */
 }
 
-.weekly-cards,
-.event-cards,
-.activity-cards{
-  display:grid;
+/* --- RWD 響應式配置 --- */
+.weekly-cards, .event-cards, .activity-cards {
+  display: grid;
   grid-template-columns: repeat(4, minmax(260px, 1fr));
   gap: 20px;
 }
 
-.weekly-card,
-.event-card{
-  border-radius: calc(18px * var(--ui-scale));
-  box-shadow: var(--shadow);
+@media (max-width: 1200px) {
+  .weekly-cards, .event-cards, .activity-cards { grid-template-columns: repeat(3, 1fr); }
 }
 
-/* RWD */
-@media (max-width: 1200px){
-  .weekly-cards, .event-cards, .activity-cards{
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-@media (max-width: 900px){
-  .weekly-cards, .event-cards, .activity-cards{
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (max-width: 560px){
-  .weekly-cards, .event-cards, .activity-cards{
-    grid-template-columns: 1fr;
-  }
+@media (max-width: 900px) {
+  .weekly-cards, .event-cards, .activity-cards { grid-template-columns: repeat(2, 1fr); }
+  /* 手機版標題自動降級預防爆版 */
+  h1, .h1 { font-size: var(--text-2xl); }
 }
 
-.card h2,
-.card > h2,
-.sectionTitle,
-.cardTitle,
-.sideTitle{
-  font-size: 1.25rem !important;   
-  font-weight: 700 !important;    
-  line-height: 1.3;
-}
-
-.card h2,
-.sideTitle{
-  display: flex;
-  align-items: center;
-  gap: 8px;
+@media (max-width: 560px) {
+  .weekly-cards, .event-cards, .activity-cards { grid-template-columns: 1fr; }
+  /* 手機版內文不低於 14px */
+  body { font-size: var(--text-sm); }
 }

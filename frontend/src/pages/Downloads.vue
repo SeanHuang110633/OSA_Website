@@ -199,10 +199,11 @@ const pageButtons = computed(() => {
 
 <style scoped>
 .page{ padding: 18px 0 56px; }
-.crumb{ color:#6b7280; font-size:12px; margin: 10px 0 18px; }
+
+/* 修正：麵包屑改用 14px (sm)，移除 12px 硬編碼 */
 .crumb{
   color:#6b7280;
-  font-size:12px;
+  font-size: var(--text-sm);
   margin: 10px 0 18px;
   display:flex;
   align-items:center;
@@ -242,14 +243,21 @@ const pageButtons = computed(() => {
   gap: 12px;
   flex-wrap: wrap;
 }
-.lab{ font-weight: 900; color:#0f172a; }
+/* 修正：搜尋標籤改用 16px (base) */
+.lab{ 
+  font-size: var(--text-base);
+  font-weight: 900; 
+  color:#0f172a; 
+}
 
+/* 修正：下拉選單與輸入框改用 16px (base) */
 .sel{
   height: 34px;
   border-radius: 10px;
   border: 2px solid rgba(16,24,40,.16);
   background:#fff;
   padding: 0 12px;
+  font-size: var(--text-base);
   font-weight: 900;
 }
 .kw{
@@ -259,17 +267,20 @@ const pageButtons = computed(() => {
   border: 2px solid rgba(16,24,40,.16);
   padding: 0 14px;
   background:#fff;
+  font-size: var(--text-base);
   font-weight: 900;
   outline: none;
 }
 .kw:focus{ border-color: rgba(0,100,220,.85); box-shadow: 0 0 0 3px rgba(0,100,220,.12); }
 
+/* 修正：按鈕改用 16px (base) */
 .go{
   height: 32px;
   padding: 0 18px;
   border-radius: 999px;
   border: 0;
   background:#f2cf57;
+  font-size: var(--text-base);
   font-weight: 900;
   cursor:pointer;
 }
@@ -281,6 +292,7 @@ const pageButtons = computed(() => {
   border-radius: 999px;
   border: 1px solid rgba(16,24,40,.18);
   background:#fff;
+  font-size: var(--text-base);
   font-weight: 900;
   cursor:pointer;
 }
@@ -292,29 +304,34 @@ const pageButtons = computed(() => {
   border-collapse: collapse;
   background:#fff;
 }
+/* 修正：表頭改用 16px (base) */
 thead th{
   padding: 18px 10px 14px;
+  font-size: var(--text-base);
   font-weight: 900;
   text-align:center;
   border-bottom: 1px solid rgba(16,24,40,.55);
 }
+/* 修正：表格內容改用 16px (base) */
 tbody td{
   padding: 18px 10px;
   border-bottom: 1px solid rgba(16,24,40,.12);
   vertical-align: middle;
+  font-size: var(--text-base);
   font-weight: 400;
 }
 .tdCenter{ text-align:center; }
 
+/* 修正：標題行高改用 1.6 (leading-normal) 提升繁體中文閱讀體驗 */
 .titleCell .zh{
   font-weight: 400;
-  line-height: 1.6;
+  line-height: var(--leading-normal);
 }
 .titleCell .en{
   margin-top: 10px;
   font-weight: 400;
   color:#111827;
-  line-height: 1.6;
+  line-height: var(--leading-normal);
 }
 .mini{
   margin-left: 8px;
@@ -322,9 +339,11 @@ tbody td{
 }
 .unit{ color:#111827; }
 
+/* 修正：空資料提示改用 16px (base) */
 .empty{
   text-align:center;
   color:#98a2b3;
+  font-size: var(--text-base);
   font-weight: 900;
   padding: 26px 0;
 }
@@ -336,19 +355,24 @@ tbody td{
   gap: 16px;
   padding: 14px 6px 0;
 }
+/* 修正：筆數統計改用 14px (sm) */
 .count{
   margin-right:auto;
   color:#98a2b3;
+  font-size: var(--text-sm);
   font-weight: 400;
 }
 
+/* 修正：分頁按鈕改用 16px (base) */
 .p{
   display:flex;
   gap: 10px;
   align-items:center;
+  font-size: var(--text-base);
   font-weight: 400;
 }
 .pg{
+  font-size: var(--text-base);
   font-weight: 400;
 }
 .pg.on{

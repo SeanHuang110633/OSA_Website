@@ -101,7 +101,9 @@
 .h{
   font-weight: 800;
   color:#f2cf57;
-  font-size: 20px;
+  /* 修正：頁腳標題統一使用 20px (H3 等級) */
+  font-size: var(--text-xl);
+  line-height: var(--leading-tight);
   margin: 6px 0 16px;
   letter-spacing: .02em;
 }
@@ -120,14 +122,16 @@
   margin-top: 2px;
 }
 .txt{
-  font-size: 16px;
-  line-height: 1.7;
+  /* 修正：內文標準化為 16px 並設定行高 1.6 */
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
   color: rgba(255,255,255,.9);
 }
 
 .item{
   display:block;
-  font-size: 16px;
+  /* 修正：重要連結標準化為 16px */
+  font-size: var(--text-base);
   line-height: 1.9;
   color: rgba(255,255,255,.9);
   text-decoration: none;
@@ -139,7 +143,8 @@
   display:flex;
   align-items:center;
   gap: 10px;
-  font-size: 16px;
+  /* 修正：社群連結標準化為 16px */
+  font-size: var(--text-base);
   color: rgba(255,255,255,.9);
   text-decoration: none;
   margin: 14px 0;
@@ -153,7 +158,8 @@
   border-radius: 6px;
   background: rgba(255,255,255,.10);
   border: 1px solid rgba(255,255,255,.14);
-  font-size: 14px;
+  /* 修正：輔助資訊小標籤 14px */
+  font-size: var(--text-sm);
 }
 
 .vline{
@@ -184,15 +190,17 @@
   border-radius: 6px;
 }
 .badgeTxt{
-  font-size: 16px;
-  line-height: 1.7;
+  /* 修正：無障礙說明標註標準化 16px */
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
   color: rgba(255,255,255,.9);
 }
 
 .copyright{
   margin-top: 22px;
-  font-size: 16px;
-  line-height: 1.7;
+  /* 修正：版權標註標準化 16px */
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
   color: rgba(255,255,255,.92);
   text-align: center;
 }
@@ -218,7 +226,9 @@
 
 @media (max-width: 640px){
   .cols{ grid-template-columns: 1fr; }
-  .h{ font-size: 18px; }
-  .txt, .item, .social, .badgeTxt, .copyright{ font-size: 14px; }
+  /* 修正：手機版標題降級為 18px (lg) */
+  .h{ font-size: var(--text-lg); }
+  /* 修正：手機版仍需遵循不低於 14px 規範 */
+  .txt, .item, .social, .badgeTxt, .copyright{ font-size: var(--text-sm); }
 }
 </style>

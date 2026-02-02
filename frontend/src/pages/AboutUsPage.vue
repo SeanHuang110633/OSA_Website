@@ -44,95 +44,115 @@
         </h2>
 
         <div class="staffList">
-          <article v-for="p in activePeople" :key="p.id" class="staffCard">
+
+          <div v-if="loading" class="state">載入中…</div>
+          <div v-else-if="activeUnit.staff.length === 0" class="state">目前沒有資料。</div>
+          
+          <div v-for="member in activeUnit.staff" :key="member.id" class="staffCard">
             <div class="avatarWrap">
-              <img class="avatar" :src="avatarPlaceholder" alt="匿名頭像" />
+              <img 
+                :src="member.img || '/assets/images/default-avatar.png'" 
+                :alt="member.nameLine" 
+                class="avatar" 
+              />
             </div>
-
             <div class="info">
-              <div class="nameLine">{{ p.name }}</div>
-
+              <div class="nameLine">{{ member.nameLine }}</div>
               <div class="kv">
                 <div class="row">
-                  <div class="label">職稱：</div>
-                  <div class="val">{{ p.title }}</div>
+                  <div class="label">職稱</div>
+                  <div class="val">{{ member.title || '無' }}</div>
                 </div>
                 <div class="row">
-                  <div class="label">公務信箱：</div>
-                  <div class="val link">{{ p.email }}</div>
+                  <div class="label">職掌</div>
+                  <div class="val">
+                    <div v-for="(line, index) in member.desc" :key="index">
+                      {{ line }}
+                    </div>
+                  </div>
                 </div>
-                <div class="row">
-                  <div class="label">分機電話：</div>
-                  <div class="val">{{ p.ext }}</div>
+                <div v-if="member.email" class="row">
+                  <div class="label">信箱</div>
+                  <a :href="`mailto:${member.email}`" class="val link">{{ member.email }}</a>
+                </div>
+                <div v-if="member.tel" class="row">
+                  <div class="label">電話</div>
+                  <div class="val">{{ member.tel }}</div>
                 </div>
               </div>
-
-              <div class="duty">{{ p.duty }}</div>
-              <div class="extra">{{ p.extra }}</div>
             </div>
-          </article>
+          </div>
         </div>
       </section>
     </div>
   </main>
 </template>
 
-<script setup>
-import { computed, ref } from "vue";
-import { RouterLink } from "vue-router";
-import avatarPlaceholder from "../assets/avatar_placeholder.png";
 
-const units = [
-  { key: "osa", name: "學務處", count: 7 },
-  { key: "life", name: "生活輔導組", count: 15 },
-  { key: "coun", name: "諮商輔導中心", count: 18 },
-  { key: "club", name: "課外活動組", count: 7 },
-  { key: "sl", name: "服務學習發展中心", count: 4 },
-  { key: "dorm", name: "住宿服務組", count: 22 },
-  { key: "health", name: "衛生保健組", count: 9 },
-  { key: "career", name: "職涯發展中心", count: 7 },
-  { key: "indig", name: "原住民族學生資源中心", count: 1 },
-];
-
-const activeUnitKey = ref("osa");
-
-const activeUnit = computed(
-  () => units.find((u) => u.key === activeUnitKey.value) || units[0]
-);
-
-function makePeople(unitKey, unitName, count) {
-  return Array.from({ length: count }, (_, i) => {
-    const idx = String(i + 1).padStart(2, "0");
+<script>
+export default {
+  data() {
     return {
-      id: `${unitKey}-${idx}`,
-      name: `${unitName} 第${idx}人`,
-      title: "職稱待補",
-      email: "xxx@ncu.edu.tw",
-      ext: "分機待補",
-      duty: "（待補）協助本處/本組相關業務（可多行）。",
-      extra: "（待補）可放第二段介紹或職務重點。",
+      units: [],
+      activeUnitKey: null,
+      loading: true,
     };
-  });
-}
+  },
+  computed: {
+    activeUnit() {
+      const u = this.units.find((u) => u.key === this.activeUnitKey);
+      return u || { name: "", count: 0, staff: [] };
+    },
+  },
+  async created() {
+    await this.fetchMembers();
+  },
+  methods: {
+    async fetchMembers() {
+      this.loading = true;
+      try {
+        // 1. 確保連向後端 API，加上 /api 前綴
+        const response = await fetch('http://localhost:8000/api/members/?locale=zh-TW');
+        if (!response.ok) throw new Error('Network response was not ok');
+        
+        const data = await response.json();
 
-const peopleByUnit = {
-  osa: makePeople("osa", "學務處", 7),
-  life: makePeople("life", "生活輔導組", 15),
-  coun: makePeople("coun", "諮商輔導中心", 18),
-  club: makePeople("club", "課外活動組", 7),
-  sl: makePeople("sl", "服務學習發展中心", 4),
-  dorm: makePeople("dorm", "住宿服務組", 22),
-  health: makePeople("health", "衛生保健組", 9),
-  career: makePeople("career", "職涯發展中心", 7),
-  indig: makePeople("indig", "原住民族學生資源中心", 1),
+        // 2. 資料映射：將後端 JSON 欄位轉為前端 Template 使用的變數名
+        this.units = data.map(dept => {
+          // 只篩選在職成員 (status 1 或 3)
+          const activeMembers = dept.members.filter(m => m.status === 1 || m.status === 3);
+          
+          return {
+            key: dept.id.toString(),
+            name: dept.name,
+            count: activeMembers.length,
+            staff: activeMembers.map(m => ({
+              id: m.id,
+              nameLine: m.name,       // 對應 template 裡的 member.nameLine
+              title: m.job_title,    // 對應 template 裡的 member.title
+              desc: m.job_description, // 陣列格式
+              email: m.email,
+              tel: m.tel,
+              // 補上後端圖片路徑
+              img: m.photo_path ? `http://localhost:8000/uploads/${m.photo_path}` : null
+            }))
+          };
+        });
+
+        // 預設展開第一個部門
+        if (this.units.length > 0) {
+          this.activeUnitKey = this.units[0].key;
+        }
+      } catch (err) {
+        console.error("無法取得成員資料:", err);
+      } finally {
+        this.loading = false;
+      }
+    },
+  },
 };
-
-const activePeople = computed(() => peopleByUnit[activeUnitKey.value] || []);
 </script>
-
 <style scoped>
-
-
 .page {
   padding: 1.7rem 0 3.6rem;
 }
@@ -156,7 +176,8 @@ const activePeople = computed(() => peopleByUnit[activeUnitKey.value] || []);
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  font-size: 1.5rem; 
+  /* 修正：側欄標題統一為 20px */
+  font-size: var(--text-xl); 
   font-weight: 700;
   color: #111827;
   margin-bottom: 1rem;
@@ -184,8 +205,8 @@ const activePeople = computed(() => peopleByUnit[activeUnitKey.value] || []);
   padding: 0.7rem 1rem;
   border-radius: 999px;
   cursor: pointer;
-
-  font-size: 1rem; 
+  /* 修正：側欄選單標準化 16px */
+  font-size: var(--text-base); 
   font-weight: 400;
   color: #111827;
   text-align: left;
@@ -202,7 +223,7 @@ const activePeople = computed(() => peopleByUnit[activeUnitKey.value] || []);
 
 .sideBtn .txt {
   letter-spacing: 0.02em;
-  line-height: 1.4;
+  line-height: var(--leading-tight);
 }
 
 .content {
@@ -217,7 +238,8 @@ const activePeople = computed(() => peopleByUnit[activeUnitKey.value] || []);
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  font-size: 0.86rem; 
+  /* 修正：Meta 資訊標準 14px */
+  font-size: var(--text-sm); 
   color: #6b7280;
   margin-bottom: 0.6rem;
 }
@@ -235,26 +257,33 @@ const activePeople = computed(() => peopleByUnit[activeUnitKey.value] || []);
   color: #6b7280;
 }
 
-.h1,
+.h1 {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  /* 修正：H1 頁面標題 30px */
+  font-size: var(--text-3xl); 
+  font-weight: 700;
+  color: #111827;
+  margin: 0.75rem 0 0.75rem;
+  line-height: var(--leading-tight);
+}
+
 .h2 {
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  font-size: 1.5rem; 
+  /* 修正：H2 區塊標題 24px */
+  font-size: var(--text-2xl); 
   font-weight: 700;
   color: #111827;
-}
-
-.h1 {
-  margin: 0.75rem 0 0.75rem;
-}
-
-.h2 {
   margin: 1.3rem 0 0.9rem;
+  line-height: var(--leading-tight);
 }
 
 .h2Count {
-  font-size: 0.95rem;
+  /* 修正：輔助資訊標準 14px */
+  font-size: var(--text-sm);
   color: #64748b;
   font-weight: 400;
 }
@@ -267,9 +296,10 @@ const activePeople = computed(() => peopleByUnit[activeUnitKey.value] || []);
 }
 
 .desc {
-  font-size: 1rem; 
+  /* 修正：內文標準 16px 與行高 1.6 */
+  font-size: var(--text-base); 
+  line-height: var(--leading-normal);
   color: #334155;
-  line-height: 1.8;
 }
 
 .staffList {
@@ -310,10 +340,12 @@ const activePeople = computed(() => peopleByUnit[activeUnitKey.value] || []);
 }
 
 .nameLine {
-  font-size: 1.5rem; 
+  /* 修正：卡片標題使用 20px */
+  font-size: var(--text-xl); 
   font-weight: 700;
   color: #111827;
   margin-bottom: 0.75rem;
+  line-height: var(--leading-tight);
 }
 
 .kv {
@@ -331,14 +363,16 @@ const activePeople = computed(() => peopleByUnit[activeUnitKey.value] || []);
 }
 
 .label {
-  font-size: 1rem;
+  /* 修正：欄位標籤 16px */
+  font-size: var(--text-base);
   color: #0f172a;
 }
 
 .val {
-  font-size: 1rem;
+  /* 修正：欄位內容 16px 與行高 1.6 */
+  font-size: var(--text-base);
   color: #111827;
-  line-height: 1.7;
+  line-height: var(--leading-normal);
 }
 
 .val.link {
@@ -346,17 +380,19 @@ const activePeople = computed(() => peopleByUnit[activeUnitKey.value] || []);
 }
 
 .duty {
-  font-size: 1rem; 
+  /* 修正：內文標準化 16px */
+  font-size: var(--text-base); 
   color: #111827;
   margin-top: 0.65rem;
-  line-height: 1.8;
+  line-height: var(--leading-normal);
 }
 
 .extra {
-  font-size: 1rem; 
+  /* 修正：內文標準化 16px */
+  font-size: var(--text-base); 
   margin-top: 0.5rem;
   color: #334155;
-  line-height: 1.8;
+  line-height: var(--leading-normal);
 }
 
 /* RWD */
@@ -374,5 +410,32 @@ const activePeople = computed(() => peopleByUnit[activeUnitKey.value] || []);
     width: 10rem;
     height: 10rem;
   }
+  .h1 { font-size: var(--text-2xl); } /* 手機版降級為 24px */
+}
+
+.state {
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(0,0,0,.04);
+  /* 修正：狀態提示 16px */
+  font-size: var(--text-base);
+  color: #334155;
+}
+.state--error {
+  background: rgba(255,0,0,.06);
+  color: #991b1b;
+}
+
+.state {
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(0,0,0,.04);
+  /* 修正：狀態提示 16px */
+  font-size: var(--text-base);
+  color: #334155;
+}
+.state--error {
+  background: rgba(255,0,0,.06);
+  color: #991b1b;
 }
 </style>

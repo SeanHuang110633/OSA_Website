@@ -202,6 +202,7 @@ function updateItemsPerView() {
 // ----------------------------------------------------------------
 // 資料載入與處理
 // ----------------------------------------------------------------
+// EventsRow.vue 裡的 onMounted 修正
 onMounted(async () => {
   updateItemsPerView();
   window.addEventListener("resize", updateItemsPerView);
@@ -209,9 +210,19 @@ onMounted(async () => {
   loading.value = true;
   try {
     const data = await getActivities();
-    events.value = data;
+    console.log("從攔截器拿到的直接資料:", data);
+
+    // 因為 request.js 已經做了 return response.data
+    // 所以這裡得到的 data 直接就是後端回傳的 Array
+    if (Array.isArray(data)) {
+      events.value = data;
+    } else {
+      // 防呆：萬一後端格式變了
+      events.value = data?.items || [];
+    }
+
   } catch (error) {
-    console.error("Failed to fetch activities", error);
+    console.error("無法取得活動列表:", error);
   } finally {
     loading.value = false;
   }
@@ -426,22 +437,31 @@ function formatDateShort(dateStr) {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 56px;
-  height: 56px;
-  border-radius: 999px;
+
+  width: 40px;
+  height: 40px;
+  background: transparent;
   border: 0;
-  background: #fff;
-  box-shadow: 0 10px 24px rgba(16, 24, 40, 0.14);
+  box-shadow: none;
+  border-radius: 0;
+
+  font-size: 36px;
+  font-weight: 700;
+  color: #0f3a63; /* ✅ 深藍色 */
+
   cursor: pointer;
-  font-size: 34px;
-  color: #0f172a;
   display: grid;
   place-items: center;
   z-index: 2;
-  transition: filter 0.2s;
+
+  opacity: 0.75;
+  transition: opacity 0.2s, transform 0.2s, color 0.2s;
 }
+
 .nav:hover {
-  filter: brightness(0.95);
+  opacity: 1;
+  transform: translateY(-50%) scale(1.15);
+  color: #0c2f52; /* hover 時更深一點，質感會出來 */
 }
 .prev {
   left: -6px;
@@ -613,13 +633,31 @@ function formatDateShort(dateStr) {
 }
 
 /* ================= 列表模式 (List Mode) ================= */
+/* ✅ 列表模式：只顯示約 5 筆高度，超出就滾動 */
 .listWrap {
   padding: 0 6px;
+
+  /* 你的 row padding 16px，上下內容高度大概 70~90px/列
+     先用 5 列 * 86px 當基準，之後你可微調 */
+  max-height: calc(5 * 86px);
+
+  overflow-y: auto;      /* ✅ 出現垂直 scrollbar */
+  overflow-x: hidden;    /* ✅ 避免橫向滾動 */
+  padding-right: 8px;    /* ✅ 讓 scrollbar 不壓到內容 */
+
+  border-radius: 16px;   /* ✅ 外層也有圓角 */
 }
+
+/* list 保持外框樣式，但不要再 hidden 掉 y，否則 scrollbar 會被吃掉 */
 .list {
   border: 1px solid rgba(16, 24, 40, 0.1);
   border-radius: 16px;
-  overflow: hidden;
+  overflow: visible;     /* ✅ 重要：不要 hidden */
+}
+
+/* （選配）讓 row 最後一筆不要被外框切到 */
+.row:last-child {
+  border-bottom: 0;
 }
 .row {
   display: grid;

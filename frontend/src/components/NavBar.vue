@@ -1,6 +1,5 @@
 <template>
   <header class="header">
-    <!-- 中間：Logo + 標題 + 搜尋 -->
     <div class="mid">
       <div class="container midInner">
         <div class="brand">
@@ -18,14 +17,12 @@
       </div>
     </div>
 
-    <!-- 下方：導覽列 -->
     <div class="navStrip">
       <div class="container navInner">
         <nav class="menu" aria-label="主選單">
           <RouterLink class="item" to="/about">關於本處</RouterLink>
           <span class="vline"></span>
 
-          <!-- ✅ 各單位連結：點擊開關（不閃退） -->
           <div class="dd" ref="ddRef">
             <button
               class="item has"
@@ -133,23 +130,16 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 import school from "../assets/school.png";
 
-/* 下拉開關 */
 const open = ref(false);
 const ddRef = ref(null);
 
-function toggle() {
-  open.value = !open.value;
-}
-function close() {
-  open.value = false;
-}
+function toggle() { open.value = !open.value; }
+function close() { open.value = false; }
 
-/* ✅ 點外面關閉 + ESC 關閉（避免閃退、也不會一直黏住） */
 function onDocPointerDown(e) {
   if (!open.value) return;
   const el = ddRef.value;
-  if (!el) return;
-  if (!el.contains(e.target)) close();
+  if (!el || !el.contains(e.target)) close();
 }
 function onDocKeyDown(e) {
   if (e.key === "Escape") close();
@@ -164,7 +154,6 @@ onBeforeUnmount(() => {
   document.removeEventListener("keydown", onDocKeyDown);
 });
 
-/* 各處室連結（先保底；你之後換成每個單位的正式網址） */
 const links = {
   life: "https://www.ncu.edu.tw/tw/unit?id=student_affairs",
   consult: "https://www.ncu.edu.tw/tw/unit?id=student_affairs",
@@ -207,31 +196,29 @@ const links = {
 }
 .brandText .zh {
   font-weight: 900;
-  font-size: 22px;
-  letter-spacing: 0.5px;
-  line-height: 1.1;
+  /* 修正：單位名稱標題統一為 24px */
+  font-size: var(--text-2xl);
+  letter-spacing: .5px;
+  line-height: var(--leading-tight);
 }
 .brandText .en {
   margin-top: 4px;
-  font-size: 16px;
-  color: #1f2f3d;
-  letter-spacing: 0.3px;
+  /* 修正：副標題標準化為 16px */
+  font-size: var(--text-base);
+  color:#1f2f3d;
+  letter-spacing: .3px;
 }
 
-/* 搜尋 */
-.search {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.input {
+.search{ display:flex; align-items:center; gap:10px; }
+.input{
   width: 320px;
   height: 44px;
   border-radius: 999px;
   border: 1px solid rgba(16, 24, 40, 0.18);
   padding: 0 18px;
-  background: #fff;
-  font-size: 16px;
+  background:#fff;
+  /* 修正：輸入框文字標準化 16px */
+  font-size: var(--text-base);
 }
 .btn {
   width: 44px;
@@ -243,8 +230,7 @@ const links = {
   font-size: 18px;
 }
 
-/* 導覽列 */
-.navStrip {
+.navStrip{
   background: #eaf4ff;
   border-bottom: 1px solid rgba(21, 58, 99, 0.18);
 }
@@ -261,17 +247,24 @@ const links = {
   gap: 18px;
   flex-wrap: nowrap;
 }
+
 .item {
-  font-weight: 900;
-  font-size: 18px;
+  /* 保持原本的粗體作為預設 */
+  font-weight: 550; 
+  font-size: var(--text-lg);
   color: #111827;
   white-space: nowrap;
   text-decoration: none;
-}
-.item:hover {
-  text-decoration: underline;
+  /* 加入轉場效果，讓字體變細時平滑一點 */
+  transition: font-weight 0.2s ease, color 0.2s ease; 
 }
 
+/* 修改：Hover 時將字體改細 */
+.item:hover {
+  font-weight: 100; /* 或者使用 500，視你喜歡的細度而定 */
+  text-decoration: underline;
+  color: var(--blue-900); /* 建議 hover 時也可以微調顏色增加互動感 */
+}
 .vline {
   width: 1px;
   height: 26px;
@@ -285,7 +278,7 @@ const links = {
   align-items: center;
 }
 
-/* ✅ 移除醜框框：button 跟一般 nav item 一致 */
+/* 移除醜框框：button 跟一般 nav item 一致 */
 .item.has {
   background: transparent !important;
   border: 0 !important;
@@ -294,11 +287,12 @@ const links = {
   box-shadow: none !important;
   cursor: pointer;
 }
+/* 針對下拉選單按鈕 (has) 的 hover 也要同步 */
 .item.has:hover {
   background: transparent;
+  font-weight: 400; 
   text-decoration: underline;
 }
-
 /* caret */
 .caret {
   font-size: 12px;
@@ -330,11 +324,12 @@ const links = {
   display: block;
   text-align: center;
   padding: 10px 12px;
-  font-size: 16px;
+  /* 修正：下拉選單項目標準化 16px */
+  font-size: var(--text-base);
   font-weight: 700;
   color: #0f3a63;
   text-decoration: none;
-  line-height: 1.4;
+  line-height: var(--leading-tight);
 }
 .ddItem + .ddItem {
   border-top: 1px solid rgba(15, 58, 99, 0.18);
