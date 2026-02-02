@@ -4,14 +4,13 @@ from app.schemas.member_schema import DepartmentMemberView
 from app.services.member_service import MemberService
 from app.dependencies import get_member_service
 
-# 建立成員相關 API Router
-# prefix="/members" 代表所有路徑都會是 /api/members/...
-# tags 用於 Swagger 文件分類顯示
+# 建議：這裡是撈取成員，但回傳結構是以「部門」為單位，
+# 若未來有單純撈取「所有成員扁平列表」的需求，可以區分不同路由。
+# 目前先維持設定的 prefix="/members" 不然還要改來改去
 router = APIRouter(
     prefix="/members",
     tags=["Organization Members"]
 )
-
 
 @router.get(
     "/",
@@ -25,38 +24,33 @@ def list_department_members(
     service: MemberService = Depends(get_member_service)
 ):
     """
-    取得所有「啟用中的部門」及其成員資料
+    取得所有「啟用中的部門」及其成員資料。
+    
+    API 行為：
+    1. 撈取所有 is_active=True 的部門 (Repository 層處理)
+    2. 每個部門包含其 status!=3 (非離職) 的成員 (Repository 層處理)
+    3. 根據 locale 轉換多語系欄位 (Service 層處理)
 
-    API 層設計原則說明：
-    1. 本層只負責：
-       - 接收請求參數（例如 locale）
-       - 呼叫 service 層
-       - 回傳整理後的資料
-    2. 不在 API 層做 status 過濾
-       - 避免資料規則分散在多個層級
-       - 確保邏輯集中在 service 層
-    3. API 回傳資料結構已由 response_model 限制
-       - 保證前端拿到的格式穩定
-       - 自動產生 Swagger 文件
-
-    locale 說明：
-    - 由前端指定語言版本
-    - service 層會依 locale 取對應語系欄位
-      （例如 Department.name[locale]）
-
-    回傳資料範例（簡化）：
+    回傳資料結構 (DepartmentMemberView)：
     [
       {
-        "department": "學務處",
+        "id": 1,
+        "name": "學務處",
+        "description": "<p>部門介紹...</p>",
+        "website_url": "https://...",
+        "sort_order": 10,
         "members": [
           {
+            "id": 101,
             "name": "王小明",
-            "job_title": "副學務長"
+            "job_title": "副學務長",
+            "job_description": ["綜理學務"],
+            "status": 1
           }
         ]
-      }
+      },
+      ...
     ]
     """
-
-    # 呼叫 service 層進行資料整理與語系轉換
+    # 直接呼叫 Service 層處理好的方法
     return service.get_organized_members(locale=locale)

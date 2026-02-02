@@ -32,36 +32,40 @@
 
         <h1 class="h1">
           <span class="barSm" aria-hidden="true"></span>
-          關於學務處
+          關於{{ activeUnit.name || "學務處" }}
         </h1>
 
-        <p class="desc">（待補）請放學務處簡介文字。</p>
+        <div
+          class="desc"
+          v-html="activeUnit.description || '尚無簡介內容。'"
+        ></div>
 
         <h2 class="h2">
           <span class="barSm" aria-hidden="true"></span>
-          {{ activeUnit.name }}
+          {{ activeUnit.name }}成員
           <span class="h2Count">（{{ activeUnit.count }} 人）</span>
         </h2>
 
         <div class="staffList">
-
           <div v-if="loading" class="state">載入中…</div>
-          <div v-else-if="activeUnit.staff.length === 0" class="state">目前沒有資料。</div>
-          
-          <div v-for="member in activeUnit.staff" :key="member.id" class="staffCard">
+          <div v-else-if="activeUnit.staff.length === 0" class="state">
+            目前沒有資料。
+          </div>
+
+          <div
+            v-for="member in activeUnit.staff"
+            :key="member.id"
+            class="staffCard"
+          >
             <div class="avatarWrap">
-              <img 
-                :src="member.img || '/assets/images/default-avatar.png'" 
-                :alt="member.nameLine" 
-                class="avatar" 
-              />
+              <img :src="placeholder" :alt="member.nameLine" class="avatar" />
             </div>
             <div class="info">
               <div class="nameLine">{{ member.nameLine }}</div>
               <div class="kv">
                 <div class="row">
                   <div class="label">職稱</div>
-                  <div class="val">{{ member.title || '無' }}</div>
+                  <div class="val">{{ member.title || "無" }}</div>
                 </div>
                 <div class="row">
                   <div class="label">職掌</div>
@@ -73,7 +77,9 @@
                 </div>
                 <div v-if="member.email" class="row">
                   <div class="label">信箱</div>
-                  <a :href="`mailto:${member.email}`" class="val link">{{ member.email }}</a>
+                  <a :href="`mailto:${member.email}`" class="val link">{{
+                    member.email
+                  }}</a>
                 </div>
                 <div v-if="member.tel" class="row">
                   <div class="label">電話</div>
@@ -88,20 +94,23 @@
   </main>
 </template>
 
-
 <script>
+import placeholder from "../assets/avatar_placeholder.png";
 export default {
   data() {
     return {
       units: [],
       activeUnitKey: null,
       loading: true,
+      placeholder,
     };
   },
   computed: {
+    // 取得當前選中的部門資料
     activeUnit() {
       const u = this.units.find((u) => u.key === this.activeUnitKey);
-      return u || { name: "", count: 0, staff: [] };
+      // [修改] 補上 description 的預設值，避免初始化時報錯
+      return u || { name: "", description: "", count: 0, staff: [] };
     },
   },
   async created() {
@@ -111,31 +120,39 @@ export default {
     async fetchMembers() {
       this.loading = true;
       try {
-        // 1. 確保連向後端 API，加上 /api 前綴
-        const response = await fetch('http://localhost:8000/api/members/?locale=zh-TW');
-        if (!response.ok) throw new Error('Network response was not ok');
-        
+        // 呼叫後端 API
+        const response = await fetch(
+          "http://localhost:8000/api/members/?locale=zh-TW",
+        );
+        if (!response.ok) throw new Error("Network response was not ok");
+
         const data = await response.json();
 
-        // 2. 資料映射：將後端 JSON 欄位轉為前端 Template 使用的變數名
-        this.units = data.map(dept => {
-          // 只篩選在職成員 (status 1 或 3)
-          const activeMembers = dept.members.filter(m => m.status === 1 || m.status === 3);
-          
+        // 資料映射：將後端 JSON 轉為前端格式
+        this.units = data.map((dept) => {
+          // 篩選在職成員
+          const activeMembers = dept.members.filter(
+            (m) => m.status === 1 || m.status === 3,
+          );
+
           return {
             key: dept.id.toString(),
             name: dept.name,
+            // [新增] 接收後端回傳的部門 HTML 簡介
+            description: dept.description,
             count: activeMembers.length,
-            staff: activeMembers.map(m => ({
+            staff: activeMembers.map((m) => ({
               id: m.id,
-              nameLine: m.name,       // 對應 template 裡的 member.nameLine
-              title: m.job_title,    // 對應 template 裡的 member.title
-              desc: m.job_description, // 陣列格式
+              nameLine: m.name,
+              title: m.job_title,
+              desc: m.job_description, // 這是陣列
               email: m.email,
               tel: m.tel,
-              // 補上後端圖片路徑
-              img: m.photo_path ? `http://localhost:8000/uploads/${m.photo_path}` : null
-            }))
+              // [備註] 若後端有圖片，組裝完整 URL，否則為 null (Template 層會處理預設圖)
+              img: m.photo_path
+                ? `http://localhost:8000/uploads/${m.photo_path}`
+                : null,
+            })),
           };
         });
 
@@ -152,6 +169,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .page {
   padding: 1.7rem 0 3.6rem;
@@ -159,7 +177,7 @@ export default {
 
 .layout {
   display: grid;
-  grid-template-columns: 22.5rem 1fr; 
+  grid-template-columns: 22.5rem 1fr;
   gap: 1.6rem;
   align-items: start;
 }
@@ -176,8 +194,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  /* 修正：側欄標題統一為 20px */
-  font-size: var(--text-xl); 
+  font-size: var(--text-xl);
   font-weight: 700;
   color: #111827;
   margin-bottom: 1rem;
@@ -205,8 +222,7 @@ export default {
   padding: 0.7rem 1rem;
   border-radius: 999px;
   cursor: pointer;
-  /* 修正：側欄選單標準化 16px */
-  font-size: var(--text-base); 
+  font-size: var(--text-base);
   font-weight: 400;
   color: #111827;
   text-align: left;
@@ -238,8 +254,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  /* 修正：Meta 資訊標準 14px */
-  font-size: var(--text-sm); 
+  font-size: var(--text-sm);
   color: #6b7280;
   margin-bottom: 0.6rem;
 }
@@ -261,8 +276,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  /* 修正：H1 頁面標題 30px */
-  font-size: var(--text-3xl); 
+  font-size: var(--text-3xl);
   font-weight: 700;
   color: #111827;
   margin: 0.75rem 0 0.75rem;
@@ -273,8 +287,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  /* 修正：H2 區塊標題 24px */
-  font-size: var(--text-2xl); 
+  font-size: var(--text-2xl);
   font-weight: 700;
   color: #111827;
   margin: 1.3rem 0 0.9rem;
@@ -282,7 +295,6 @@ export default {
 }
 
 .h2Count {
-  /* 修正：輔助資訊標準 14px */
   font-size: var(--text-sm);
   color: #64748b;
   font-weight: 400;
@@ -296,10 +308,16 @@ export default {
 }
 
 .desc {
-  /* 修正：內文標準 16px 與行高 1.6 */
-  font-size: var(--text-base); 
+  font-size: var(--text-base);
   line-height: var(--leading-normal);
   color: #334155;
+  /* 確保 HTML 內容樣式正常 */
+  white-space: pre-wrap;
+}
+
+/* 讓 v-html 內部的 p 標籤保持間距 */
+.desc :deep(p) {
+  margin-bottom: 0.8rem;
 }
 
 .staffList {
@@ -310,7 +328,7 @@ export default {
 
 .staffCard {
   display: grid;
-  grid-template-columns: 16.25rem 1fr; 
+  grid-template-columns: 16.25rem 1fr;
   gap: 1.35rem;
   background: #f4f6ff;
   border: 1px solid rgba(16, 24, 40, 0.1);
@@ -328,7 +346,7 @@ export default {
 }
 
 .avatar {
-  width: 12.5rem;  
+  width: 12.5rem;
   height: 12.5rem;
   object-fit: cover;
   border-radius: 1rem;
@@ -340,8 +358,7 @@ export default {
 }
 
 .nameLine {
-  /* 修正：卡片標題使用 20px */
-  font-size: var(--text-xl); 
+  font-size: var(--text-xl);
   font-weight: 700;
   color: #111827;
   margin-bottom: 0.75rem;
@@ -363,13 +380,11 @@ export default {
 }
 
 .label {
-  /* 修正：欄位標籤 16px */
   font-size: var(--text-base);
   color: #0f172a;
 }
 
 .val {
-  /* 修正：欄位內容 16px 與行高 1.6 */
   font-size: var(--text-base);
   color: #111827;
   line-height: var(--leading-normal);
@@ -380,16 +395,14 @@ export default {
 }
 
 .duty {
-  /* 修正：內文標準化 16px */
-  font-size: var(--text-base); 
+  font-size: var(--text-base);
   color: #111827;
   margin-top: 0.65rem;
   line-height: var(--leading-normal);
 }
 
 .extra {
-  /* 修正：內文標準化 16px */
-  font-size: var(--text-base); 
+  font-size: var(--text-base);
   margin-top: 0.5rem;
   color: #334155;
   line-height: var(--leading-normal);
@@ -410,32 +423,20 @@ export default {
     width: 10rem;
     height: 10rem;
   }
-  .h1 { font-size: var(--text-2xl); } /* 手機版降級為 24px */
+  .h1 {
+    font-size: var(--text-2xl);
+  }
 }
 
 .state {
   padding: 16px;
   border-radius: 12px;
-  background: rgba(0,0,0,.04);
-  /* 修正：狀態提示 16px */
+  background: rgba(0, 0, 0, 0.04);
   font-size: var(--text-base);
   color: #334155;
 }
 .state--error {
-  background: rgba(255,0,0,.06);
-  color: #991b1b;
-}
-
-.state {
-  padding: 16px;
-  border-radius: 12px;
-  background: rgba(0,0,0,.04);
-  /* 修正：狀態提示 16px */
-  font-size: var(--text-base);
-  color: #334155;
-}
-.state--error {
-  background: rgba(255,0,0,.06);
+  background: rgba(255, 0, 0, 0.06);
   color: #991b1b;
 }
 </style>

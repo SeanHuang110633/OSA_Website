@@ -1,68 +1,37 @@
-from sqlmodel import Session, select
-from sqlalchemy.orm import selectinload
-from app.models.member_model import Department
-
+from typing import List
+from sqlmodel import Session, select, col
+from sqlalchemy.orm import selectinload, with_loader_criteria
+from app.models.member_model import Department, Member
 
 class MemberRepository:
-    """
-    MemberRepository
-    ----------------
-    Repository 層負責「資料存取」
-    - 不處理商業邏輯
-    - 不做過度資料過濾
-    - 專心負責把資料「完整、安全」地從 DB 撈出來
-    """
-
     def __init__(self, session: Session):
-        """
-        初始化 Repository
-        session 由 FastAPI dependency injection 傳入
-        """
         self.session = session
 
-    def get_all_active_members_by_dept(self):
+    def get_departments_with_members(self) -> List[Department]:
         """
-        取得「所有啟用中的部門」以及其底下的所有成員
-
-        設計重點說明：
-        1. 這裡「只」過濾 Department.is_active
-           - 停用部門不應出現在前端
-        2. 不在 Repository 層過濾 Member.status
-           - 避免因為資料狀態不一致導致整個部門消失
-           - 若 DB 中成員 status 資料不乾淨，會造成 API 回傳空陣列
-        3. 成員的顯示與過濾（例如 status == 1）
-           - 應交由 Service 層處理
-           - 較安全、也較符合分層設計（Separation of Concerns）
-
-        回傳資料結構：
-        [
-          Department(
-            id=1,
-            name={...},
-            members=[Member(...), Member(...)]
-          ),
-          ...
-        ]
+        取得「未刪除且啟用」的部門，並預先載入「未刪除且在職」的成員。
         """
-
-        # 建立查詢語句
         statement = (
-            # 以 Department 為主表查詢
             select(Department)
-
-            # 只撈啟用中的部門
+            # 1. 過濾部門本身 (Department 過濾)
+            .where(Department.deleted_at.is_(None))
             .where(Department.is_active == True)
-
-            # 依部門排序欄位排序，確保前端顯示順序穩定
-            .order_by(Department.sort_order.asc())
-
-            # 使用 selectinload 預先載入 members
-            # 避免 N+1 Query 問題
-            # 查詢流程：
-            # 1. 先查所有 Department
-            # 2. 再用 IN (...) 一次查完所有 Member
-            .options(selectinload(Department.members))
+            
+            # 2. 排序部門
+            .order_by(col(Department.sort_order).asc())
+            
+            .options(
+                # 3. 預先載入 members
+                selectinload(Department.members),
+                
+                # 4. 針對載入的 Member 進行全域過濾
+                # 這會確保 SQL 在 JOIN 或 SELECT 成員時，自動加上 AND members.deleted_at IS NULL
+                # 這裡同時過濾掉了「已刪除」和「非在職(status!=1)」的成員 (視需求調整 status)
+                with_loader_criteria(
+                    Member, 
+                    (Member.deleted_at.is_(None)) & (Member.status == 1)
+                )
+            )
         )
-
-        # 執行查詢並回傳結果（List[Department]）
+        
         return self.session.exec(statement).all()
